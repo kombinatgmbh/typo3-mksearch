@@ -193,9 +193,11 @@ class tx_mksearch_service_engine_ElasticSearch extends Tx_Rnbase_Service_Base im
      */
     protected function getElasticaQuery(array $fields, array $options)
     {
+        /* @var Query $elasticaQuery */
         $elasticaQuery = Query::create($fields['term']);
 
         $elasticaQuery = $this->handleSorting($elasticaQuery, $options);
+        $elasticaQuery = $this->getFilterQueryForFeGroups($elasticaQuery);
 
         return $elasticaQuery;
     }
@@ -219,6 +221,21 @@ class tx_mksearch_service_engine_ElasticSearch extends Tx_Rnbase_Service_Base im
                 ]
             );
         }
+
+        return $elasticaQuery;
+    }
+
+    /**
+     * @param Query $elasticaQuery
+     *
+     * @return Query
+     */
+    private function getFilterQueryForFeGroups(Query $elasticaQuery)
+    {
+        //$userGroups = $GLOBALS['TSFE']->fe_user->groupData['uid'];
+        $groups = ['0'];
+        $term = new Elastica\Query\Terms('fe_group_mi', $groups);
+        $elasticaQuery->setPostFilter($term);
 
         return $elasticaQuery;
     }
