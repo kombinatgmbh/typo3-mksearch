@@ -64,18 +64,16 @@ class tx_mksearch_action_ElasticSearch extends tx_mksearch_action_AbstractSearch
                 [$index]
             );
             $searchEngine->openIndex($index);
-
+            $searchResult = $searchEngine->search($fields, $options, $configurations);
             $this->handlePageBrowser(
                 $parameters,
                 $configurations,
                 $confId,
                 $viewData,
-                $fields,
+                $searchResult['numFound'],
                 $options,
                 $searchEngine
             );
-
-            $searchResult = $searchEngine->search($fields, $options, $configurations);
         }
 
         $viewData->offsetSet('result', $searchResult);
@@ -106,7 +104,7 @@ class tx_mksearch_action_ElasticSearch extends tx_mksearch_action_AbstractSearch
      * @param \Sys25\RnBase\Configuration\ConfigurationInterface $configurations
      * @param string $confId
      * @param ArrayObject $viewdata
-     * @param array $fields
+     * @param int $listSize
      * @param array $options
      * @param tx_mksearch_service_engine_ElasticSearch $index
      */
@@ -115,7 +113,7 @@ class tx_mksearch_action_ElasticSearch extends tx_mksearch_action_AbstractSearch
         \Sys25\RnBase\Configuration\ConfigurationInterface $configurations,
         $confId,
         ArrayObject $viewdata,
-        array &$fields,
+        int $listSize,
         array &$options,
         tx_mksearch_service_engine_ElasticSearch $searchEngine
     ) {
@@ -131,12 +129,6 @@ class tx_mksearch_action_ElasticSearch extends tx_mksearch_action_AbstractSearch
                 'tx_rnbase_util_PageBrowser',
                 $pageBrowserId
             );
-
-            $listSize = 0;
-            if ($result = $searchEngine->getIndex()->count($fields['term'])) {
-                $listSize = $result;
-            }
-
             $pageBrowser->setState($parameters, $listSize, $options['limit']);
             $state = $pageBrowser->getState();
 
