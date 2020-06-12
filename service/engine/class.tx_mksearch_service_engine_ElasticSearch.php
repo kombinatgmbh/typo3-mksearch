@@ -169,6 +169,7 @@ class tx_mksearch_service_engine_ElasticSearch extends \Sys25\RnBase\Typo3Wrappe
             $result['searchTime'] = (microtime(true) - $startTime).' ms';
             $result['queryTime'] = $searchResult->getTotalTime().' ms';
             $result['numFound'] = $searchResult->getTotalHits();
+            $result['aggregations'] = $searchResult->getAggregations();
             $result['error'] = $searchResult->getResponse()->getError();
             $result['items'] = $items;
 
@@ -194,11 +195,53 @@ class tx_mksearch_service_engine_ElasticSearch extends \Sys25\RnBase\Typo3Wrappe
      */
     protected function getElasticaQuery(array $fields, array $options)
     {
-        /* @var Query $elasticaQuery */
-        $elasticaQuery = Query::create($fields['term'] ?? '');
-
+        $groupFilter = $this->getFilterArrayForFeGroups();
+        $query = [
+            'query' => [
+                'bool' => [
+                    'must' => [
+                        'multi_match' => [
+                            'query' => $fields['term'],
+                            'fields' => '_all',
+                            'operator' => 'and',
+                            //"fuzziness" => "AUTO",
+                        ],
+                    ],
+                    'filter'=> [
+                        $groupFilter,
+                    ],
+                ],
+            ],
+        ];
+        $elasticaQuery = new Query($query);
         $elasticaQuery = $this->handleSorting($elasticaQuery, $options);
-        $elasticaQuery = $this->getFilterQueryForFeGroups($elasticaQuery);
+        $elasticaQuery = $this->handleFacets($elasticaQuery);
+
+        return $elasticaQuery;
+    }
+
+    /**
+     * @param Query $elasticaQuery
+     *
+     * @return Query
+     */
+    private function handleFacets(Query $elasticaQuery)
+    {
+        $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\Extbase\\Object\\ObjectManager');
+        $configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
+        $extbaseFrameworkConfiguration = $configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+        $elasticSearchConfiguration = $extbaseFrameworkConfiguration['plugin.']['tx_mksearch.']['elasticsearch.'];
+
+        if (isset($elasticSearchConfiguration['filter.']['facets.']) &&
+            !empty($elasticSearchConfiguration['filter.']['facets.']) &&
+            is_array($elasticSearchConfiguration['filter.']['facets.'])
+        ) {
+            foreach ($elasticSearchConfiguration['filter.']['facets.'] as $facet) {
+                $agg = new \Elastica\Aggregation\Terms($facet['name']);
+                $agg->setField("{$facet['field']}.keyword");
+                $elasticaQuery->addAggregation($agg);
+            }
+        }
 
         return $elasticaQuery;
     }
@@ -227,18 +270,18 @@ class tx_mksearch_service_engine_ElasticSearch extends \Sys25\RnBase\Typo3Wrappe
     }
 
     /**
-     * @param Query $elasticaQuery
-     *
-     * @return Query
+     * @return array
      */
-    private function getFilterQueryForFeGroups(Query $elasticaQuery)
+    private function getFilterArrayForFeGroups()
     {
         //$userGroups = $GLOBALS['TSFE']->fe_user->groupData['uid'];
-        $groups = ['0'];
-        $term = new Elastica\Query\Terms('fe_group_mi', $groups);
-        $elasticaQuery->setPostFilter($term);
+        $groups = '0';
 
-        return $elasticaQuery;
+        return [
+            'match' => [
+                'fe_group_mi' => $groups, // separate with whitespace if you have more search values, e.g.: '0 35'
+            ],
+        ];
     }
 
     /**
