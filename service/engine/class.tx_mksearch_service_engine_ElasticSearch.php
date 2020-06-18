@@ -62,10 +62,16 @@ class tx_mksearch_service_engine_ElasticSearch extends \Sys25\RnBase\Typo3Wrappe
     private $indexName;
 
     /**
+     * @var array
+     */
+    private $config = [];
+
+    /**
      * Constructor.
      */
     public function __construct()
     {
+        $this->config = $this->getConfiguration();
         $useInternalElasticaLib = \Sys25\RnBase\Configuration\Processor::getExtensionCfgValue(
             'mksearch',
             'useInternalElasticaLib'
@@ -164,6 +170,7 @@ class tx_mksearch_service_engine_ElasticSearch extends \Sys25\RnBase\Typo3Wrappe
 
             $lastRequest = $this->getIndex()->getClient()->getLastRequest();
             $result['searchUrl'] = $lastRequest->getPath();
+            $result['searchFields'] = $fields;
             $result['searchQuery'] = $lastRequest->getQuery();
             $result['searchData'] = $lastRequest->getData();
             $result['searchTime'] = (microtime(true) - $startTime).' ms';
@@ -216,6 +223,7 @@ class tx_mksearch_service_engine_ElasticSearch extends \Sys25\RnBase\Typo3Wrappe
         $elasticaQuery = new Query($query);
         $elasticaQuery = $this->handleSorting($elasticaQuery, $options);
         $elasticaQuery = $this->handleFacets($elasticaQuery);
+        $elasticaQuery = $this->handleFacetFilters($elasticaQuery, $fields);
 
         return $elasticaQuery;
     }
@@ -227,16 +235,11 @@ class tx_mksearch_service_engine_ElasticSearch extends \Sys25\RnBase\Typo3Wrappe
      */
     private function handleFacets(Query $elasticaQuery)
     {
-        $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\Extbase\\Object\\ObjectManager');
-        $configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
-        $extbaseFrameworkConfiguration = $configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-        $elasticSearchConfiguration = $extbaseFrameworkConfiguration['plugin.']['tx_mksearch.']['elasticsearch.'];
-
-        if (isset($elasticSearchConfiguration['filter.']['facets.']) &&
-            !empty($elasticSearchConfiguration['filter.']['facets.']) &&
-            is_array($elasticSearchConfiguration['filter.']['facets.'])
+        if (isset($this->config['filter']['facets']['fields']) &&
+            !empty($this->config['filter']['facets']['fields']) &&
+            is_array($this->config['filter']['facets']['fields'])
         ) {
-            foreach ($elasticSearchConfiguration['filter.']['facets.'] as $facet) {
+            foreach ($this->config['filter']['facets']['fields'] as $facet) {
                 $agg = new \Elastica\Aggregation\Terms($facet['name']);
                 $agg->setField("{$facet['field']}.keyword");
                 $elasticaQuery->addAggregation($agg);
@@ -246,6 +249,32 @@ class tx_mksearch_service_engine_ElasticSearch extends \Sys25\RnBase\Typo3Wrappe
         return $elasticaQuery;
     }
 
+
+    /**
+     * @param Query $elasticaQuery
+     * @param array $fields
+     *
+     * @return Query
+     */
+    private function handleFacetFilters(Query $elasticaQuery, array $fields)
+    {
+        if (isset($fields['facet']) &&
+            is_array($fields['facet']) &&
+            !empty($fields['facet'])
+        ) {
+            $mapping = $this->config['filter']['facets']['hit']['mapping']['field'];
+
+            foreach ($fields['facet'] as $name => $value) {
+                if (isset($mapping[$name])) {
+                    // TODO: value kann Array sein wenn Formfield eine Checkbox ist.
+                    $term = new \Elastica\Query\Terms($mapping[$name], [$value]);
+                    $elasticaQuery->setPostFilter($term);
+                }
+            }
+        }
+
+        return $elasticaQuery;
+    }
     /**
      * @param Query $elasticaQuery
      * @param array $options
@@ -700,6 +729,21 @@ class tx_mksearch_service_engine_ElasticSearch extends \Sys25\RnBase\Typo3Wrappe
      */
     public function postProcessIndexing(tx_mksearch_model_internal_Index $index)
     {
+    }
+
+    /**
+     * Get the configuration array for the elasticsearch typoscript setup.
+     *
+     * @return array
+     */
+    private function getConfiguration()
+    {
+        $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\Extbase\\Object\\ObjectManager');
+        $configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
+        $extbaseFrameworkConfiguration = $configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+        $typoScriptService = new \TYPO3\CMS\Core\TypoScript\TypoScriptService();
+
+        return $typoScriptService->convertTypoScriptArrayToPlainArray($extbaseFrameworkConfiguration['plugin.']['tx_mksearch.']['elasticsearch.']);
     }
 
     public function init(): bool
