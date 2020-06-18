@@ -86,6 +86,7 @@ class tx_mksearch_filter_ElasticSearchBase extends tx_rnbase_filter_BaseFilter
         }
 
         $this->handleTerm($fields, $parameters, $configurations, $confId);
+        $this->handleFacets($fields, $parameters, $configurations, $confId);
         $this->handleSorting($options);
 
         return true;
@@ -111,6 +112,31 @@ class tx_mksearch_filter_ElasticSearchBase extends tx_rnbase_filter_BaseFilter
             $fields['term'] = $parsedTemplate;
         }
     }
+
+    /**
+     * Fügt den Suchstring zu dem Filter hinzu.
+     *
+     * @param array $fields
+     * @param \Sys25\RnBase\Frontend\Request\ParametersInterface $parameters
+     * @param tx_rnbase_configurations $configurations
+     * @param string $confId
+     */
+    protected function handleFacets(&$fields, &$parameters, &$configurations, $confId)
+    {
+        $facets = $parameters->get('facet');
+
+        if (is_array($facets)) {
+            foreach ($facets as $name => $value) {
+                // TODO: value kann mehrere Werte enthalten, wenn Formelement Checkbox ist.
+                if (!isset($fields['facet'][$name])) {
+                    $fields['facet'] = [$name => intval($value)];
+                } else {
+                    $fields['facet'][$name][] = intval($value);
+                }
+            }
+        }
+    }
+
 
     /**
      * Fügt die Sortierung zu dem Filter hinzu.
