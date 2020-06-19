@@ -266,8 +266,10 @@ class tx_mksearch_service_engine_ElasticSearch extends \Sys25\RnBase\Typo3Wrappe
 
             foreach ($fields['facet'] as $name => $value) {
                 if (isset($mapping[$name])) {
-                    // TODO: value kann Array sein wenn Formfield eine Checkbox ist.
-                    $term = new \Elastica\Query\Terms($mapping[$name], [$value]);
+                    if (!is_array($value)) {
+                        $value = [$value];
+                    }
+                    $term = new \Elastica\Query\Terms($mapping[$name], $value);
                     $elasticaQuery->setPostFilter($term);
                 }
             }
