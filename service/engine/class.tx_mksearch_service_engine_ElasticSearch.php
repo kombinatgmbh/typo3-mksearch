@@ -234,7 +234,7 @@ class tx_mksearch_service_engine_ElasticSearch extends Tx_Rnbase_Service_Base im
      */
     private function handleFacets(Query $elasticaQuery)
     {
-                if (isset($this->config['filter']['facets']['fields']) &&
+        if (isset($this->config['filter']['facets']['fields']) &&
             !empty($this->config['filter']['facets']['fields']) &&
             is_array($this->config['filter']['facets']['fields'])
         ) {
@@ -265,8 +265,10 @@ class tx_mksearch_service_engine_ElasticSearch extends Tx_Rnbase_Service_Base im
 
             foreach ($fields['facet'] as $name => $value) {
                 if (isset($mapping[$name])) {
-                    // TODO: value kann Array sein wenn Formfield eine Checkbox ist.
-                    $term = new \Elastica\Query\Terms($mapping[$name], [$value]);
+                    if (!is_array($value)) {
+                        $value = [$value];
+                    }
+                    $term = new \Elastica\Query\Terms($mapping[$name], $value);
                     $elasticaQuery->setPostFilter($term);
                 }
             }

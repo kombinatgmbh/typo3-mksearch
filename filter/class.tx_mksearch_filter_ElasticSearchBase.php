@@ -114,7 +114,7 @@ class tx_mksearch_filter_ElasticSearchBase extends tx_rnbase_filter_BaseFilter
     }
 
     /**
-     * Fügt den Suchstring zu dem Filter hinzu.
+     * Fügt die ausgewählten Facetten zu dem Filter hinzu.
      *
      * @param array $fields
      * @param \Sys25\RnBase\Frontend\Request\ParametersInterface $parameters
@@ -126,12 +126,13 @@ class tx_mksearch_filter_ElasticSearchBase extends tx_rnbase_filter_BaseFilter
         $facets = $parameters->get('facet');
 
         if (is_array($facets)) {
-            foreach ($facets as $name => $value) {
-                // TODO: value kann mehrere Werte enthalten, wenn Formelement Checkbox ist.
-                if (!isset($fields['facet'][$name])) {
-                    $fields['facet'] = [$name => intval($value)];
-                } else {
-                    $fields['facet'][$name][] = intval($value);
+            foreach ($facets as $name => $valueArray) {
+                foreach ($valueArray as $value) {
+                    if (!isset($fields['facet'][$name])) {
+                        $fields['facet'] = [$name => [intval($value)]];
+                    } else {
+                        $fields['facet'][$name][] = intval($value);
+                    }
                 }
             }
         }
