@@ -27,6 +27,7 @@ use Elastica\Document;
 use Elastica\Exception\ClientException;
 use Elastica\Index;
 use Elastica\Query;
+use Elastica\QueryBuilder;
 use Elastica\Result;
 use Elastica\ResultSet;
 use Elastica\Search;
@@ -66,6 +67,11 @@ class tx_mksearch_service_engine_ElasticSearch extends Tx_Rnbase_Service_Base im
     private $config = [];
 
     /**
+     * @var QueryBuilder
+     */
+    private $qb = null;
+
+    /**
      * Constructor.
      */
     public function __construct()
@@ -80,6 +86,7 @@ class tx_mksearch_service_engine_ElasticSearch extends Tx_Rnbase_Service_Base im
         if ($useInternalElasticaLib > 0) {
             \DMK\Mksearch\Utility\ComposerUtility::autoloadElastica();
         }
+        $this->qb = new QueryBuilder();
     }
 
     /**
@@ -201,28 +208,22 @@ class tx_mksearch_service_engine_ElasticSearch extends Tx_Rnbase_Service_Base im
      */
     protected function getElasticaQuery(array $fields, array $options)
     {
-        $groupFilter = $this->getFilterArrayForFeGroups();
-        $query = [
-            'query' => [
-                'bool' => [
-                    'must' => [
-                        'multi_match' => [
-                            'query' => $fields['term'],
-                            'fields' => '_all',
-                            'operator' => 'and',
-                            //"fuzziness" => "AUTO",
-                        ],
-                    ],
-                    'filter'=> [
-                        $groupFilter,
-                    ],
-                ],
-            ],
-        ];
+        $query = $this->qb->query()->bool()
+            ->addMust(
+                $this->qb->query()->multi_match()
+                    ->setQuery($fields['term'])
+                    ->setFields(['_all'])
+                    ->setOperator('and')
+            );
+
+        $filterQueryBool = $this->qb->query()->bool();
+        $filterQueryBool = $this->filterFeGroups($filterQueryBool);
+        $filterQueryBool = $this->filterFacets($filterQueryBool, $fields);
+        $query->addFilter($filterQueryBool);
+
         $elasticaQuery = new Query($query);
         $elasticaQuery = $this->handleSorting($elasticaQuery, $options);
         $elasticaQuery = $this->handleFacets($elasticaQuery);
-        $elasticaQuery = $this->handleFacetFilters($elasticaQuery, $fields);
 
         return $elasticaQuery;
     }
@@ -248,14 +249,28 @@ class tx_mksearch_service_engine_ElasticSearch extends Tx_Rnbase_Service_Base im
         return $elasticaQuery;
     }
 
+    /**
+     * @param Query\BoolQuery $query
+     *
+     * @return Query\BoolQuery
+     */
+    private function filterFeGroups(Query\BoolQuery $query)
+    {
+        //$userGroups = $GLOBALS['TSFE']->fe_user->groupData['uid'];
+        $groups = '0'; // separate with whitespace if you have more search values, e.g.: '0 35'
+
+        return $query->addMust(
+            $this->qb->query()->match('fe_group_mi', $groups)
+        );
+    }
 
     /**
-     * @param Query $elasticaQuery
+     * @param Query\BoolQuery $query
      * @param array $fields
      *
      * @return Query
      */
-    private function handleFacetFilters(Query $elasticaQuery, array $fields)
+    private function filterFacets(Query\BoolQuery $query, array $fields)
     {
         if (isset($fields['facet']) &&
             is_array($fields['facet']) &&
@@ -268,13 +283,16 @@ class tx_mksearch_service_engine_ElasticSearch extends Tx_Rnbase_Service_Base im
                     if (!is_array($value)) {
                         $value = [$value];
                     }
-                    $term = new \Elastica\Query\Terms($mapping[$name], $value);
-                    $elasticaQuery->setPostFilter($term);
+                    foreach ($value as $item) {
+                        $query->addMust(
+                            $this->qb->query()->match($mapping[$name], $item)
+                        );
+                    }
                 }
             }
         }
 
-        return $elasticaQuery;
+        return $query;
     }
     /**
      * @param Query $elasticaQuery
@@ -297,21 +315,6 @@ class tx_mksearch_service_engine_ElasticSearch extends Tx_Rnbase_Service_Base im
         }
 
         return $elasticaQuery;
-    }
-
-    /**
-     * @return array
-     */
-    private function getFilterArrayForFeGroups()
-    {
-        //$userGroups = $GLOBALS['TSFE']->fe_user->groupData['uid'];
-        $groups = '0';
-
-        return [
-            'match' => [
-                'fe_group_mi' => $groups, // for separate with whitespace if you have more search values, e.g.: '0 35'
-            ],
-        ];
     }
 
     /**

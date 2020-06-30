@@ -126,12 +126,17 @@ class tx_mksearch_filter_ElasticSearchBase extends tx_rnbase_filter_BaseFilter
         $facets = $parameters->get('facet');
 
         if (is_array($facets)) {
+            if (!is_array($fields['facet'])) {
+                $fields['facet'] = [];
+            }
             foreach ($facets as $name => $valueArray) {
-                foreach ($valueArray as $value) {
-                    if (!isset($fields['facet'][$name])) {
-                        $fields['facet'] = [$name => [intval($value)]];
-                    } else {
-                        $fields['facet'][$name][] = intval($value);
+                if (is_array($valueArray)) {
+                    foreach ($valueArray as $value) {
+                        if (!isset($fields['facet'][$name])) {
+                            $fields['facet'][$name] = [intval($value)];
+                        } else {
+                            $fields['facet'][$name][] = intval($value);
+                        }
                     }
                 }
             }
