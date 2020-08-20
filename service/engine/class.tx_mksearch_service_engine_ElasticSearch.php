@@ -257,8 +257,14 @@ class tx_mksearch_service_engine_ElasticSearch extends \Sys25\RnBase\Typo3Wrappe
      */
     private function filterFeGroups(Query\BoolQuery $query)
     {
-        //$userGroups = $GLOBALS['TSFE']->fe_user->groupData['uid'];
-        $groups = '0'; // separate with whitespace if you have more search values, e.g.: '0 35'
+        $userGroups = $GLOBALS['TSFE']->fe_user->groupData['uid'];
+
+        if (empty($userGroups)) {
+            $groups = '0';
+        } else {
+            $groups = implode(' ', $userGroups);
+            $groups .= ' 0';  // separate with whitespace if you have more search values, e.g.: '0 35'
+        }
 
         return $query->addMust(
             $this->qb->query()->match('fe_group_mi', $groups)
