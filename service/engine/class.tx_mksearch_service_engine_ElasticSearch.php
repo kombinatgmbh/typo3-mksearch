@@ -211,8 +211,8 @@ class tx_mksearch_service_engine_ElasticSearch extends Tx_Rnbase_Service_Base im
         $query = $this->qb->query()->bool()
             ->addMust(
                 $this->qb->query()->multi_match()
-                    ->setQuery($fields['term'])
-                    ->setFields(['_all'])
+                    ->setQuery($this->getQueryTerm($fields))
+                    ->setFields($this->setFields($fields))
                     ->setOperator('and')
             );
 
@@ -226,6 +226,50 @@ class tx_mksearch_service_engine_ElasticSearch extends Tx_Rnbase_Service_Base im
         $elasticaQuery = $this->handleFacets($elasticaQuery);
 
         return $elasticaQuery;
+    }
+
+    /**
+     * Get the query term. If there is a ":" in the term string you will just get the part after it.
+     *
+     * @param array $fields
+     *
+     * @return string
+     */
+    private function getQueryTerm(array $fields)
+    {
+        if (false !== strpos($fields['term'], ':')) {
+            $term = Tx_Rnbase_Utility_Strings::trimExplode(':', $fields['term']);
+
+            return array_pop($term);
+        }
+
+        return $fields['term'];
+    }
+
+    /**
+     * Set field to given value if its name is send via form.
+     *
+     * @param array $fields
+     *
+     * @return string[]
+     */
+    private function setFields(array $fields)
+    {
+        if (!isset($this->config['allowedSearchFields']) || empty($this->config['allowedSearchFields'])) {
+            return ['_all'];
+        }
+        $allowedFields = Tx_Rnbase_Utility_Strings::trimExplode(',', $this->config['allowedSearchFields']);
+
+        if (false !== strpos($fields['term'], ':')) {
+            $term = Tx_Rnbase_Utility_Strings::trimExplode(':', $fields['term']);
+            $setFields = trim(array_shift($term));
+
+            if (in_array($setFields, $allowedFields)) {
+                return [$setFields];
+            }
+        }
+
+        return ['_all'];
     }
 
     /**
