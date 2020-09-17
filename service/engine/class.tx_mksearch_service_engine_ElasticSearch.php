@@ -257,7 +257,7 @@ class tx_mksearch_service_engine_ElasticSearch extends \Sys25\RnBase\Typo3Wrappe
     private function setFields(array $fields)
     {
         if (!isset($this->config['allowedSearchFields']) || empty($this->config['allowedSearchFields'])) {
-            return ['_all'];
+            return $this->getBoostOrDefaultFields();
         }
         $allowedFields = Tx_Rnbase_Utility_Strings::trimExplode(',', $this->config['allowedSearchFields']);
 
@@ -270,7 +270,24 @@ class tx_mksearch_service_engine_ElasticSearch extends \Sys25\RnBase\Typo3Wrappe
             }
         }
 
-        return ['_all'];
+        return $this->getBoostOrDefaultFields();
+    }
+
+    /**
+     * @return array
+     */
+    private function getBoostOrDefaultFields()
+    {
+        if (!isset($this->config['filter']['boost']) || empty($this->config['filter']['boost'])) {
+            return ['_all'];
+        }
+        $fields = [];
+
+        foreach ($this->config['filter']['boost'] as $fieldName => $boost) {
+            $fields[] = "$fieldName^$boost";
+        }
+
+        return $fields;
     }
 
     /**
