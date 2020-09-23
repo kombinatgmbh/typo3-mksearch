@@ -320,10 +320,10 @@ class tx_mksearch_service_engine_ElasticSearch extends Tx_Rnbase_Service_Base im
         $userGroups = $GLOBALS['TSFE']->fe_user->groupData['uid'];
 
         if (empty($userGroups)) {
-            $groups = '0';
+            $groups = '0 -2'; // "-2" is "show at any login"
         } else {
             $groups = implode(' ', $userGroups);
-            $groups .= ' 0';  // separate with whitespace if you have more search values, e.g.: '0 35'
+            $groups .= ' 0 -2';  // separate with whitespace if you have more search values, e.g.: '0 35'
         }
 
         return $query->addMust(
