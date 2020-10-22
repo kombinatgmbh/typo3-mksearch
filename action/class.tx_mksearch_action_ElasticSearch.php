@@ -64,6 +64,7 @@ class tx_mksearch_action_ElasticSearch extends tx_mksearch_action_AbstractSearch
                 [$index]
             );
             $searchEngine->openIndex($index);
+            // first search to get the amount of the result set with taking care of filters and facets.
             $searchResult = $searchEngine->search($fields, $options, $configurations);
             $this->handlePageBrowser(
                 $parameters,
@@ -74,6 +75,8 @@ class tx_mksearch_action_ElasticSearch extends tx_mksearch_action_AbstractSearch
                 $options,
                 $searchEngine
             );
+            // second search to get the result with the correct offset.
+            $searchResult = $searchEngine->search($fields, $options, $configurations);
         }
 
         $viewData->offsetSet('result', $searchResult);
