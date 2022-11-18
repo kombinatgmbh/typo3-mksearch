@@ -153,17 +153,16 @@ class tx_mksearch_tests_Util
         global $T3_SERVICES, $T3_VAR, $TYPO3_CONF_VARS;
         global $TBE_MODULES, $TBE_MODULES_EXT, $TCA;
         global $PAGES_TYPES, $TBE_STYLES, $FILEICONS;
-        global $_EXTKEY;
         // Load each ext_tables.php file of loaded extensions
-        foreach ($extensions as $_EXTKEY) {
-            if (empty($GLOBALS['TYPO3_LOADED_EXT'][$_EXTKEY])) {
+        foreach ($extensions as $extensionKey) {
+            if (empty($GLOBALS['TYPO3_LOADED_EXT'][$extensionKey])) {
                 continue;
             }
-            $extensionInformation = $GLOBALS['TYPO3_LOADED_EXT'][$_EXTKEY];
+            $extensionInformation = $GLOBALS['TYPO3_LOADED_EXT'][$extensionKey];
             if (is_array($extensionInformation) && $extensionInformation['ext_tables.php']) {
-                // $_EXTKEY and $_EXTCONF are available in ext_tables.php
+                // 'mksearch' and $_EXTCONF are available in ext_tables.php
                 // and are explicitly set in cached file as well
-                $_EXTCONF = $GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$_EXTKEY];
+                $_EXTCONF = $GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$extensionKey];
                 require $extensionInformation['ext_tables.php'];
                 // loads the dynamicConfigFile
                 // @TODO: implement, if needet!
@@ -183,7 +182,7 @@ class tx_mksearch_tests_Util
      */
     public static function getFixturePath($filename, $dir = 'tests/fixtures/', $extKey = 'mksearch')
     {
-        return tx_rnbase_util_Extensions::extPath($extKey).$dir.$filename;
+        return \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($extKey).$dir.$filename;
     }
 
     /**
@@ -191,13 +190,13 @@ class tx_mksearch_tests_Util
      * Dabei wird alles geholt was in "plugin.tx_$extKey", "lib.$extKey." und
      * "lib.links." liegt.
      *
-     * @return tx_rnbase_configurations
+     * @return \Sys25\RnBase\Configuration\Processor
      */
     public static function loadPageTS4BE()
     {
         $extKeyTS = $extKey = 'mksearch';
 
-        tx_rnbase_util_Extensions::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:mksearch/static/static_extension_template/setup.txt">');
+        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:mksearch/static/static_extension_template/setup.txt">');
 
         $pageTSconfig = self::getPagesTSconfig(0);
         $tempConfig = $pageTSconfig['plugin.']['tx_'.$extKeyTS.'.'];
@@ -226,7 +225,7 @@ class tx_mksearch_tests_Util
         // die gerade hinzugefügten TS Dateien nicht beachtet
         $rootLine = 1;
 
-        return Tx_Rnbase_Backend_Utility::getPagesTSconfig($pageId, $rootLine);
+        return \Sys25\RnBase\Backend\Utility\BackendUtility::getPagesTSconfig($pageId, $rootLine);
     }
 
     /**
@@ -234,18 +233,18 @@ class tx_mksearch_tests_Util
      * Dabei wird alles geholt was in "plugin.tx_$extKey", "lib.$extKey." und
      * "lib.links." liegt.
      *
-     * @return tx_rnbase_configurations
+     * @return \Sys25\RnBase\Configuration\Processor
      */
     public static function loadConfig4BE($pageTSconfig)
     {
-        tx_rnbase_util_Misc::prepareTSFE(); // Ist bei Aufruf aus BE notwendig!
+        \Sys25\RnBase\Utility\Misc::prepareTSFE(); // Ist bei Aufruf aus BE notwendig!
         $GLOBALS['TSFE']->config = [];
-        $cObj = tx_rnbase::makeInstance(tx_rnbase_util_Typo3Classes::getContentObjectRendererClass());
+        $cObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::class);
 
-        $configurations = new tx_rnbase_configurations();
+        $configurations = new \Sys25\RnBase\Configuration\Processor();
         $pageTSconfig = (array) $pageTSconfig;
         $configurations->init($pageTSconfig, $cObj, 'mksearch', 'mksearch');
-        $configurations->setParameters(tx_rnbase::makeInstance('tx_rnbase_parameters'));
+        $configurations->setParameters(\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\Sys25\RnBase\Frontend\Request\Parameters::class));
 
         return $configurations;
     }
@@ -275,7 +274,7 @@ class tx_mksearch_tests_Util
             throw new Exception('First argument of getIndexerDocument has to be an "string"'.' or instance of "tx_mksearch_interface_Indexer", '.(is_object($extKeyOrIndexer) ? get_class($extKeyOrIndexer) : gettype($extKeyOrIndexer)).' given.');
         }
 
-        return tx_rnbase::makeInstance($documentClass, $extKey, $cType);
+        return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($documentClass, $extKey, $cType);
     }
 
     /**
@@ -309,10 +308,10 @@ class tx_mksearch_tests_Util
     }
 
     /**
-     * wir wollen zwar templavoila deaktivieren, wir wollen aber nicht
+     * wir wollen zwar gridelements deaktivieren, wir wollen aber nicht
      * das die PackageStates Datei angepasst wird, was TYPO3 aber zwangsläufig
      * macht. Das hat zur Folge das requests an die Seite während der Tests
-     * eine Exception verursachen da templavoila nicht geladen ist.
+     * eine Exception verursachen da gridelements nicht geladen ist.
      *
      * Also kopieren wir die PackageStates Datei damit wir die tatsächliche Datei
      * nach dem deaktiveren wieder einfügen können
@@ -322,7 +321,7 @@ class tx_mksearch_tests_Util
     public static function unloadExtensionForTypo362OrHigher($extensionKey)
     {
         // wir kommen an den Pfad zur Package Datei nur über Reflection
-        $packageManager = tx_rnbase::makeInstance('TYPO3\\CMS\\Core\\Package\\PackageManager');
+        $packageManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Package\\PackageManager');
         $packageStatesPathAndFilename = new ReflectionProperty('TYPO3\\CMS\\Core\\Package\\PackageManager', 'packageStatesPathAndFilename');
         $packageStatesPathAndFilename->setAccessible(true);
 
@@ -336,7 +335,7 @@ class tx_mksearch_tests_Util
         $method = new ReflectionMethod('TYPO3\\CMS\\Core\\Package\\PackageManager', 'getDependencyArrayForPackage');
         $method->setAccessible(true);
 
-        // falls eine extension von templavoila abhängt, müssen wir diese auch deinstallieren
+        // falls eine extension von gridelements abhängt, müssen wir diese auch deinstallieren
         foreach ($packageManager->getActivePackages() as $package) {
             $packageKey = $package->getPackageMetaData()->getPackageKey();
             $dependencies = $method->invokeArgs($packageManager, [$packageKey]);
@@ -426,7 +425,7 @@ class tx_mksearch_tests_Util
         $GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'] = '';
         $property = new ReflectionProperty('TYPO3\\CMS\\Core\\Utility\\RootlineUtility', 'rootlineFields');
         $property->setAccessible(true);
-        $rootLineFields = Tx_Rnbase_Utility_Strings::trimExplode(',', self::$addRootLineFieldsBackup, true);
+        $rootLineFields = \Sys25\RnBase\Utility\Strings::trimExplode(',', self::$addRootLineFieldsBackup, true);
         $property->setValue(null, array_diff($property->getValue(null), $rootLineFields));
     }
 
@@ -436,7 +435,7 @@ class tx_mksearch_tests_Util
             $GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'] = self::$addRootLineFieldsBackup;
             $property = new ReflectionProperty('TYPO3\\CMS\\Core\\Utility\\RootlineUtility', 'rootlineFields');
             $property->setAccessible(true);
-            $rootLineFields = Tx_Rnbase_Utility_Strings::trimExplode(',', self::$addRootLineFieldsBackup, true);
+            $rootLineFields = \Sys25\RnBase\Utility\Strings::trimExplode(',', self::$addRootLineFieldsBackup, true);
             $property->setValue(null, array_unique(array_merge($property->getValue(null), $rootLineFields)));
             self::$addRootLineFieldsBackup = null;
         }

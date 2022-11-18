@@ -81,7 +81,7 @@ class tx_mksearch_indexer_TxNewsNews extends tx_mksearch_indexer_Base
             $stopIndexing = true;
         }
 
-        tx_rnbase_util_Misc::callHook(
+        \Sys25\RnBase\Utility\Misc::callHook(
             'mksearch',
             'indexer_TxNews_afterStopIndexing',
             [
@@ -104,6 +104,11 @@ class tx_mksearch_indexer_TxNewsNews extends tx_mksearch_indexer_Base
      */
     private function handleCategoryChanged($catRecord)
     {
+        $whereClause = 'CATMM.tablenames = "tx_news_domain_model_news" AND (CATMM.uid_local = '.(int) $catRecord['uid'];
+        if ($catRecord['l10n_parent'] ?? false) {
+            $whereClause .= ' OR CATMM.uid_local = '.(int) $catRecord['l10n_parent'];
+        }
+        $whereClause .= ')';
         $rows = $this->getDatabaseConnection()->doSelect(
             'NEWS.uid AS uid',
             [
@@ -113,7 +118,7 @@ class tx_mksearch_indexer_TxNewsNews extends tx_mksearch_indexer_Base
                 'NEWS',
             ],
             [
-                'where' => 'CATMM.uid_local = '.(int) $catRecord['uid'],
+                'where' => $whereClause,
                 'orderby' => 'sorting_foreign DESC',
             ]
         );
@@ -132,6 +137,11 @@ class tx_mksearch_indexer_TxNewsNews extends tx_mksearch_indexer_Base
      */
     private function handleTagChanged($tagRecord)
     {
+        $whereClause = 'TAGMM.uid_foreign = '.(int) $tagRecord['uid'];
+        if ($tagRecord['l10n_parent'] ?? false) {
+            $whereClause .= ' OR TAGMM.uid_foreign = '.(int) $tagRecord['l10n_parent'];
+        }
+        $whereClause .= ')';
         $rows = $this->getDatabaseConnection()->doSelect(
             'NEWS.uid AS uid',
             [
@@ -141,7 +151,7 @@ class tx_mksearch_indexer_TxNewsNews extends tx_mksearch_indexer_Base
                 'NEWS',
             ],
             [
-                'where' => 'TAGMM.uid_foreign = '.(int) $tagRecord['uid'],
+                'where' => $whereClause,
             ]
         );
         // Alle gefundenen News für die Neuindizierung anmelden.
@@ -154,7 +164,7 @@ class tx_mksearch_indexer_TxNewsNews extends tx_mksearch_indexer_Base
     /**
      * Do the actual indexing for the given model.
      *
-     * @param tx_rnbase_IModel                      $oModel
+     * @param \Sys25\RnBase\Domain\Model\DataInterface                      $oModel
      * @param string                                $tableName
      * @param array                                 $rawData
      * @param tx_mksearch_interface_IndexerDocument $indexDoc
@@ -164,7 +174,7 @@ class tx_mksearch_indexer_TxNewsNews extends tx_mksearch_indexer_Base
      */
     // @codingStandardsIgnoreStart (interface/abstract mistake)
     public function indexData(
-        tx_rnbase_IModel $model,
+        \Sys25\RnBase\Domain\Model\DataInterface $model,
         $tableName,
         $rawData,
         tx_mksearch_interface_IndexerDocument $indexDoc,
@@ -181,7 +191,7 @@ class tx_mksearch_indexer_TxNewsNews extends tx_mksearch_indexer_Base
 
         // Hook to append indexer data
         if (!$news) {
-            tx_rnbase_util_Misc::callHook(
+            \Sys25\RnBase\Utility\Misc::callHook(
                 'mksearch',
                 'indexer_TxNews_prepareDataBeforeAddFields',
                 [
@@ -201,7 +211,7 @@ class tx_mksearch_indexer_TxNewsNews extends tx_mksearch_indexer_Base
 
         // At least one of the news' categories was found on black list
         if ($abort) {
-            tx_rnbase_util_Logger::info(
+            \Sys25\RnBase\Utility\Logger::info(
                 'News wurde nicht indiziert, weil das Signal von einem Hook gegeben wurde.',
                 'mksearch',
                 [
@@ -223,7 +233,7 @@ class tx_mksearch_indexer_TxNewsNews extends tx_mksearch_indexer_Base
         $this->indexNewsCategories($rawData, $news, $indexDoc);
 
         // Hook to extend indexer
-        tx_rnbase_util_Misc::callHook(
+        \Sys25\RnBase\Utility\Misc::callHook(
             'mksearch',
             'indexer_TxNews_prepareDataAfterAddFields',
             [
@@ -568,11 +578,11 @@ class tx_mksearch_indexer_TxNewsNews extends tx_mksearch_indexer_Base
     /**
      * The conection to the db.
      *
-     * @return Tx_Rnbase_Database_Connection
+     * @return \Sys25\RnBase\Database\Connection
      */
     protected function getDatabaseConnection()
     {
-        return Tx_Rnbase_Database_Connection::getInstance();
+        return \Sys25\RnBase\Database\Connection::getInstance();
     }
 
     /**
@@ -631,6 +641,10 @@ deleteOnAbort = 0
 # default is the live workspace (ID = 0)
 # comma separated list of workspace IDs
 #workspaceIds = 1,2,3
+
+# When the news records are not inside a page tree with a site configuration and translations are used we need
+# to configure a pid for which the FE is loaded.
+#localizationPid = 123
 CONF;
     }
 }

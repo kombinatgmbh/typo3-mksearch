@@ -35,16 +35,14 @@ class tx_mksearch_filter_FacetBase extends tx_mksearch_filter_SolrBase
      *
      * @param array                    $fields
      * @param array                    $options
-     * @param tx_rnbase_parameters     $parameters
-     * @param tx_rnbase_configurations $configurations
-     * @param string                   $confId
+     * @param \Sys25\RnBase\Frontend\Request\RequestInterface $request
      *
      * @return bool Should subsequent query be executed at all?
      */
-    protected function initFilter(&$fields, &$options, &$parameters, &$configurations, $confId)
+    protected function initFilter(&$fields, &$options, \Sys25\RnBase\Frontend\Request\RequestInterface $request)
     {
         //erstmal die prinzipielle Suche von unserem Elter initialisieren lassen
-        if (parent::initFilter($fields, $options, $parameters, $configurations, $confId)) {
+        if (parent::initFilter($fields, $options, $request)) {
             //dann setzen wir die Werte fest, da Facetten weder echte Ergebnisse benötigen
             //noch eingeschränkt werden wollen. Sollen sie doch eingeschränkt werden
             //dann einfach einen Filter verwenden der "fq" nicht statisch auf nichts setzt

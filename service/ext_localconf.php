@@ -1,13 +1,13 @@
 <?php
 
 if (!defined('TYPO3_MODE')) {
-    die('Access denied.');
+    exit('Access denied.');
 }
 // Search engine and indexer services
-tx_rnbase_util_Extensions::addService(
-    $_EXTKEY,
-    'mksearch_engine' /* sv type */,
-    'tx_mksearch_service_engine_ZendLucene' /* sv key */,
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService(
+    'mksearch',
+    'mksearch_engine' /* sv type */ ,
+    'tx_mksearch_service_engine_ZendLucene' /* sv key */ ,
     [
         'title' => 'Search engine Zend Lucene',
         'description' => 'Service which provides access to ZEND Lucene search engine',
@@ -17,15 +17,15 @@ tx_rnbase_util_Extensions::addService(
         'quality' => 50,
         'os' => '',
         'exec' => '',
-        'classFile' => tx_rnbase_util_Extensions::extPath($_EXTKEY).'service/engine/class.tx_mksearch_service_engine_ZendLucene.php',
+        'classFile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch').'service/engine/class.tx_mksearch_service_engine_ZendLucene.php',
         'className' => 'tx_mksearch_service_engine_ZendLucene',
     ]
 );
 
-tx_rnbase_util_Extensions::addService(
-    $_EXTKEY,
-    'mksearch_engine' /* sv type */,
-    'tx_mksearch_service_engine_Solr' /* sv key */,
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService(
+    'mksearch',
+    'mksearch_engine' /* sv type */ ,
+    'tx_mksearch_service_engine_Solr' /* sv key */ ,
     [
         'title' => 'Search engine Solr',
         'description' => 'Service which provides access to Apache SOLR search engine',
@@ -35,15 +35,15 @@ tx_rnbase_util_Extensions::addService(
         'quality' => 50,
         'os' => '',
         'exec' => '',
-        'classFile' => tx_rnbase_util_Extensions::extPath($_EXTKEY).'service/engine/class.tx_mksearch_service_engine_Solr.php',
+        'classFile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch').'service/engine/class.tx_mksearch_service_engine_Solr.php',
         'className' => 'tx_mksearch_service_engine_Solr',
     ]
 );
 
-tx_rnbase_util_Extensions::addService(
-    $_EXTKEY,
-    'mksearch_engine' /* sv type */,
-    'tx_mksearch_service_engine_ElasticSearch' /* sv key */,
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService(
+    'mksearch',
+    'mksearch_engine' /* sv type */ ,
+    'tx_mksearch_service_engine_ElasticSearch' /* sv key */ ,
     [
         'title' => 'Search engine ElasticSearch',
         'description' => 'Service which provides access to ElasticSearch search engine',
@@ -53,14 +53,14 @@ tx_rnbase_util_Extensions::addService(
         'quality' => 50,
         'os' => '',
         'exec' => '',
-        'classFile' => tx_rnbase_util_Extensions::extPath($_EXTKEY).'service/engine/class.tx_mksearch_service_engine_ElasticSearch.php',
+        'classFile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch').'service/engine/class.tx_mksearch_service_engine_ElasticSearch.php',
         'className' => 'tx_mksearch_service_engine_ElasticSearch',
     ]
 );
 
 // Services for mksearch-internal use
-tx_rnbase_util_Extensions::addService(
-    $_EXTKEY,
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService(
+    'mksearch',
     'mksearch',
     'tx_mksearch_indexer_internal_index',
     [
@@ -72,12 +72,12 @@ tx_rnbase_util_Extensions::addService(
             'quality' => 50,
             'os' => '',
             'exec' => '',
-            'classFile' => tx_rnbase_util_Extensions::extPath($_EXTKEY).'service/internal/class.tx_mksearch_service_internal_Index.php',
+            'classFile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch').'service/internal/class.tx_mksearch_service_internal_Index.php',
             'className' => 'tx_mksearch_service_internal_Index',
         ]
 );
-tx_rnbase_util_Extensions::addService(
-    $_EXTKEY,
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService(
+    'mksearch',
     'mksearch',
     'tx_mksearch_indexer_internal_composite',
     [
@@ -89,12 +89,12 @@ tx_rnbase_util_Extensions::addService(
             'quality' => 50,
             'os' => '',
             'exec' => '',
-            'classFile' => tx_rnbase_util_Extensions::extPath($_EXTKEY).'service/internal/class.tx_mksearch_service_internal_Composite.php',
+            'classFile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch').'service/internal/class.tx_mksearch_service_internal_Composite.php',
             'className' => 'tx_mksearch_service_internal_Composite',
         ]
 );
-tx_rnbase_util_Extensions::addService(
-    $_EXTKEY,
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService(
+    'mksearch',
     'mksearch',
     'tx_mksearch_indexer_internal_config',
     [
@@ -106,12 +106,12 @@ tx_rnbase_util_Extensions::addService(
             'quality' => 50,
             'os' => '',
             'exec' => '',
-            'classFile' => tx_rnbase_util_Extensions::extPath($_EXTKEY).'service/internal/class.tx_mksearch_service_internal_Config.php',
+            'classFile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch').'service/internal/class.tx_mksearch_service_internal_Config.php',
             'className' => 'tx_mksearch_service_internal_Config',
         ]
 );
-tx_rnbase_util_Extensions::addService(
-    $_EXTKEY,
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService(
+    'mksearch',
     'mksearch',
     'tx_mksearch_service_internal_Keyword',
     [
@@ -123,13 +123,13 @@ tx_rnbase_util_Extensions::addService(
             'quality' => 50,
             'os' => '',
             'exec' => '',
-            'classFile' => tx_rnbase_util_Extensions::extPath($_EXTKEY).'service/internal/class.tx_mksearch_service_internal_Keyword.php',
+            'classFile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch').'service/internal/class.tx_mksearch_service_internal_Keyword.php',
             'className' => 'tx_mksearch_service_internal_Keyword',
         ]
 );
 
-tx_rnbase_util_Extensions::addService(
-    $_EXTKEY,
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService(
+    'mksearch',
     'mksearch',
     'tx_mksearch_service_irfaq_Expert',
     [
@@ -141,13 +141,13 @@ tx_rnbase_util_Extensions::addService(
             'quality' => 50,
             'os' => '',
             'exec' => '',
-            'classFile' => tx_rnbase_util_Extensions::extPath($_EXTKEY).'service/irfaq/class.tx_mksearch_service_irfaq_Expert.php',
+            'classFile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch').'service/irfaq/class.tx_mksearch_service_irfaq_Expert.php',
             'className' => 'tx_mksearch_service_irfaq_Expert',
         ]
 );
 
-tx_rnbase_util_Extensions::addService(
-    $_EXTKEY,
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService(
+    'mksearch',
     'mksearch',
     'tx_mksearch_service_irfaq_Category',
     [
@@ -159,13 +159,13 @@ tx_rnbase_util_Extensions::addService(
             'quality' => 50,
             'os' => '',
             'exec' => '',
-            'classFile' => tx_rnbase_util_Extensions::extPath($_EXTKEY).'service/irfaq/class.tx_mksearch_service_irfaq_Category.php',
+            'classFile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch').'service/irfaq/class.tx_mksearch_service_irfaq_Category.php',
             'className' => 'tx_mksearch_service_irfaq_Category',
         ]
 );
 
-tx_rnbase_util_Extensions::addService(
-    $_EXTKEY,
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService(
+    'mksearch',
     'mksearch',
     'tx_mksearch_service_irfaq_Question',
     [
@@ -177,7 +177,7 @@ tx_rnbase_util_Extensions::addService(
             'quality' => 50,
             'os' => '',
             'exec' => '',
-            'classFile' => tx_rnbase_util_Extensions::extPath($_EXTKEY).'service/irfaq/class.tx_mksearch_service_irfaq_Question.php',
+            'classFile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch').'service/irfaq/class.tx_mksearch_service_irfaq_Question.php',
             'className' => 'tx_mksearch_service_irfaq_Question',
         ]
 );

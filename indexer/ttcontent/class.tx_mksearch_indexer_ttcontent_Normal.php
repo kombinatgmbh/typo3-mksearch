@@ -30,7 +30,7 @@
 
 /**
  * Indexer service for core.tt_content called by the "mksearch" extension.
- * takes care of normal tt_content without templavoila support.
+ * takes care of normal tt_content without gridelements support.
  *
  * @author Hannes Bochmann <dev@dmk-ebusiness.de>
  */
@@ -54,7 +54,7 @@ class tx_mksearch_indexer_ttcontent_Normal extends tx_mksearch_indexer_Base
     /**
      * Do the actual indexing for the given model.
      *
-     * @param tx_rnbase_IModel                      $model
+     * @param \Sys25\RnBase\Domain\Model\DataInterface                      $model
      * @param string                                $tableName
      * @param array                                 $rawData
      * @param tx_mksearch_interface_IndexerDocument $indexDoc
@@ -63,7 +63,7 @@ class tx_mksearch_indexer_ttcontent_Normal extends tx_mksearch_indexer_Base
      * @return tx_mksearch_interface_IndexerDocument|null
      */
     public function indexData(
-        tx_rnbase_IModel $model,
+        \Sys25\RnBase\Domain\Model\DataInterface $model,
         $tableName,
         $rawData,
         tx_mksearch_interface_IndexerDocument $indexDoc,
@@ -73,14 +73,14 @@ class tx_mksearch_indexer_ttcontent_Normal extends tx_mksearch_indexer_Base
 
         // Set uid. Take care for localized records where uid of original record
         // is stored in $rawData['l18n_parent'] instead of $rawData['uid']!
-        $indexDoc->setUid(tx_rnbase_util_TCA::getUid($tableName, $rawData));
+        $indexDoc->setUid(\Sys25\RnBase\Backend\Utility\TCA::getUid($tableName, $rawData));
 
         $title = $this->getTitle($options);
         $indexDoc->setTitle($title);
 
         $indexDoc->setTimestamp($rawData['tstamp']);
 
-        $indexDoc->addField('pid', $model->record['pid'], 'keyword');
+        $indexDoc->addField('pid', $model->getProperty('pid'), 'keyword');
         $indexDoc->addField('CType', $rawData['CType'], 'keyword');
 
         if ($options['addPageMetaData']) {
@@ -90,7 +90,7 @@ class tx_mksearch_indexer_ttcontent_Normal extends tx_mksearch_indexer_Base
             // @TODO:
             //        konfigurierbar machen: description, author, etc.
             //        könnte wichtig werden!?
-            $pageData = $pageData ? $pageData : $this->getPageContent($model->record['pid']);
+            $pageData = $this->getPageContent($model->getProperty('pid'));
             if (!empty($pageData['keywords'])) {
                 $keywords = explode($separator, $pageData['keywords']);
                 foreach ($keywords as $key => $keyword) {
@@ -111,7 +111,7 @@ class tx_mksearch_indexer_ttcontent_Normal extends tx_mksearch_indexer_Base
         if (isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['mksearch'][$hookKey])
             && is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['mksearch'][$hookKey])
         ) {
-            tx_rnbase_util_Misc::callHook(
+            \Sys25\RnBase\Utility\Misc::callHook(
                 'mksearch',
                 $hookKey,
                 [
@@ -205,8 +205,8 @@ class tx_mksearch_indexer_ttcontent_Normal extends tx_mksearch_indexer_Base
      */
     protected function indexPageData(tx_mksearch_interface_IndexerDocument $indexDoc, array $options)
     {
-        $pageRecord = $this->getPageContent($this->getModelToIndex()->record['pid']);
-        $pageModel = tx_rnbase::makeInstance('tx_rnbase_model_base', $pageRecord);
+        $pageRecord = $this->getPageContent($this->getModelToIndex()->getProperty('pid'));
+        $pageModel = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\Sys25\RnBase\Domain\Model\BaseModel::class, $pageRecord);
         $pageModel->setTableName('pages');
 
         if (!empty($options['pageDataFieldMapping.'])) {
@@ -223,7 +223,7 @@ class tx_mksearch_indexer_ttcontent_Normal extends tx_mksearch_indexer_Base
     /**
      * Get the content by CType.
      *
-     * This can be overridden by special types like templavoila or gridelements.
+     * This can be overridden by special types like gridelements.
      *
      * @param array $rawData
      * @param array $options
@@ -252,7 +252,7 @@ class tx_mksearch_indexer_ttcontent_Normal extends tx_mksearch_indexer_Base
                 // by the character defined in flexform
                 if ('bodytext' == $field) {
                     // Get table parsing options from flexform
-                    $flex = tx_rnbase_util_Arrays::xml2array($rawData['pi_flexform']);
+                    $flex = \Sys25\RnBase\Utility\Arrays::xml2array($rawData['pi_flexform']);
                     if (is_array($flex)) {
                         $flexParsingOptions = $flex['data']['s_parsing']['lDEF'];
                         // Replace special parsing characters
@@ -271,13 +271,6 @@ class tx_mksearch_indexer_ttcontent_Normal extends tx_mksearch_indexer_Base
                             );
                         }
                     }
-                }
-                break;
-            case 'templavoila_pi1':
-                if (method_exists($this, 'getTemplavoilaElementContent')) {
-                    $tempContent = $this->getTemplavoilaElementContent();
-                } else {
-                    $tempContent = $rawData[$field];
                 }
                 break;
             default:
@@ -343,7 +336,7 @@ class tx_mksearch_indexer_ttcontent_Normal extends tx_mksearch_indexer_Base
                     // statement that is too long. we are fine with a database access
                     // for each pid in the list as we are in the BE and performance shouldn't
                     // be a big concern!
-                    $aRows = tx_rnbase_util_DB::doSelect('tt_content.uid', $aFrom, $aOptions);
+                    $aRows = \Sys25\RnBase\Database\Connection::getInstance()->doSelect('tt_content.uid', $aFrom, $aOptions);
 
                     foreach ($aRows as $aRow) {
                         $oIndexSrv->addRecordToIndex('tt_content', $aRow['uid']);
@@ -388,14 +381,14 @@ class tx_mksearch_indexer_ttcontent_Normal extends tx_mksearch_indexer_Base
     /**
      * Sets the index doc to deleted if neccessary.
      *
-     * @param tx_rnbase_IModel                      $model
+     * @param \Sys25\RnBase\Domain\Model\DataInterface                      $model
      * @param tx_mksearch_interface_IndexerDocument $oIndexDoc
      * @param array                                 $aOptions
      *
      * @return bool
      */
     protected function hasDocToBeDeleted(
-        tx_rnbase_IModel $model,
+        \Sys25\RnBase\Domain\Model\DataInterface $model,
         tx_mksearch_interface_IndexerDocument $oIndexDoc,
         $aOptions = []
     ) {
@@ -403,10 +396,10 @@ class tx_mksearch_indexer_ttcontent_Normal extends tx_mksearch_indexer_Base
         // isPageSetIncludeInSearchDisable() checks the no_search field of page
         // and parent::hasDocToBeDeleted() takes
         // care of all possible hidden parent pages
-        $sysPage = tx_rnbase_util_TYPO3::getSysPage();
+        $sysPage = \Sys25\RnBase\Utility\TYPO3::getSysPage();
 
         return
-            !($pageData = $this->getPageContent($model->record['pid']))
+            !($pageData = $this->getPageContent($model->getProperty('pid')))
             || !in_array($pageData['doktype'], $this->getSupportedDokTypes($aOptions))
             || $this->isPageSetIncludeInSearchDisable($model, $aOptions)
             || parent::hasDocToBeDeleted($model, $oIndexDoc, $aOptions);
@@ -419,7 +412,7 @@ class tx_mksearch_indexer_ttcontent_Normal extends tx_mksearch_indexer_Base
      */
     protected function getSupportedDokTypes(array $options)
     {
-        $sysPage = tx_rnbase_util_TYPO3::getSysPage();
+        $sysPage = \Sys25\RnBase\Utility\TYPO3::getSysPage();
         $supportedDokTypes = $this->getConfigValue('supportedDokTypes', $options);
         if (!$supportedDokTypes) {
             $supportedDokTypes[] = $sysPage::DOKTYPE_DEFAULT;
@@ -432,7 +425,7 @@ class tx_mksearch_indexer_ttcontent_Normal extends tx_mksearch_indexer_Base
      *  Checks if the field "Include in Search" of current models page
      *  is set to "Disable".
      *
-     * @param tx_rnbase_IModel $model
+     * @param \Sys25\RnBase\Domain\Model\DataInterface $model
      * @param array            $options
      *
      * @return bool
@@ -440,7 +433,7 @@ class tx_mksearch_indexer_ttcontent_Normal extends tx_mksearch_indexer_Base
     protected function isPageSetIncludeInSearchDisable($model, $options)
     {
         if ($this->shouldRespectIncludeInSearchDisable($options)) {
-            $page = $this->getPageContent($model->record['pid']);
+            $page = $this->getPageContent($model->getProperty('pid'));
             if (array_key_exists('no_search', $page) && 1 == $page['no_search']) {
                 return true;
             }
@@ -513,22 +506,22 @@ class tx_mksearch_indexer_ttcontent_Normal extends tx_mksearch_indexer_Base
     /**
      * wir brauchen auch noch die enable columns der page.
      *
-     * @param tx_rnbase_IModel                      $model
+     * @param \Sys25\RnBase\Domain\Model\DataInterface                      $model
      * @param string                                $tableName
      * @param tx_mksearch_interface_IndexerDocument $indexDoc
      *
      * @return tx_mksearch_interface_IndexerDocument
      */
     protected function indexEnableColumns(
-        tx_rnbase_IModel $model,
+        \Sys25\RnBase\Domain\Model\DataInterface $model,
         $tableName,
         tx_mksearch_interface_IndexerDocument $indexDoc,
         $indexDocFieldsPrefix = ''
     ) {
         $indexDoc = parent::indexEnableColumns($model, $tableName, $indexDoc, $indexDocFieldsPrefix);
 
-        $page = $this->getPageContent($model->record['pid']);
-        $pageModel = tx_rnbase::makeInstance('tx_rnbase_model_base', $page);
+        $page = $this->getPageContent($model->getProperty('pid'));
+        $pageModel = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\Sys25\RnBase\Domain\Model\BaseModel::class, $page);
         $indexDoc = parent::indexEnableColumns($pageModel, 'pages', $indexDoc, 'page_');
 
         return $indexDoc;

@@ -1,27 +1,26 @@
 <?php
 
 if (!defined('TYPO3_MODE')) {
-    die('Access denied.');
+    exit('Access denied.');
 }
 
-// prepare extension config
-$_EXTCONF = empty($_EXTCONF) ? [] : (is_array($_EXTCONF) ? $_EXTCONF : unserialize($_EXTCONF));
-
 // Include service configuration
-require_once tx_rnbase_util_Extensions::extPath('mksearch').'service/ext_localconf.php';
+require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch').'service/ext_localconf.php';
 
 // Include indexer registrations
-require_once tx_rnbase_util_Extensions::extPath('mksearch').'indexer/ext_localconf.php';
+require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch').'indexer/ext_localconf.php';
 
 // Register hooks
 // Hooks for converting Zend_Lucene index data
 //$GLOBALS ['TYPO3_CONF_VARS']['EXTCONF']['mksearch']['engine_ZendLucene_indexNew_beforeAddingCoreDataToDocument'][] =
-//  'EXT:' . $_EXTKEY . '/hooks/class.tx_mksearch_hooks_EngineZendLucene.php:tx_mksearch_hooks_EngineZendLucene->convertFields';
+//  'EXT:' . 'mksearch' . '/hooks/class.tx_mksearch_hooks_EngineZendLucene.php:tx_mksearch_hooks_EngineZendLucene->convertFields';
 //$GLOBALS ['TYPO3_CONF_VARS']['EXTCONF']['mksearch']['engine_ZendLucene_indexNew_beforeAddingAdditionalDataToDocument'][] =
-//  'EXT:' . $_EXTKEY . '/hooks/class.tx_mksearch_hooks_EngineZendLucene.php:tx_mksearch_hooks_EngineZendLucene->convertFields';
+//  'EXT:' . 'mksearch' . '/hooks/class.tx_mksearch_hooks_EngineZendLucene.php:tx_mksearch_hooks_EngineZendLucene->convertFields';
 
 // rnbase insert and update hooks (requires rn_base 0.14.6)
-if (isset($_EXTCONF['enableRnBaseUtilDbHook']) && (int) $_EXTCONF['enableRnBaseUtilDbHook'] > 0) {
+if (isset($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['mksearch']['enableRnBaseUtilDbHook'])
+    && (int) $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['mksearch']['enableRnBaseUtilDbHook'] > 0
+) {
     $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['rn_base']['util_db_do_insert_post'][] =
         'tx_mksearch_hooks_IndexerAutoUpdate->rnBaseDoInsertPost';
     $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['rn_base']['util_db_do_update_post'][] =
@@ -46,27 +45,33 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['proc
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][] =
     'tx_mksearch_hooks_IndexerAutoUpdate';
 // Include PageTSConfig for backend module
-tx_rnbase_util_Extensions::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:mksearch/mod1/pageTSconfig.txt">');
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:mksearch/mod1/pageTSconfig.txt">');
 
 // Register information for the test and sleep tasks
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks']['tx_mksearch_scheduler_IndexTask'] = [
-    'extension' => $_EXTKEY,
-    'title' => 'LLL:EXT:'.$_EXTKEY.'/locallang_db.xml:scheduler_indexTask_name',
-    'description' => 'LLL:EXT:'.$_EXTKEY.'/locallang_db.xml:scheduler_indexTask_description',
+    'extension' => 'mksearch',
+    'title' => 'LLL:EXT:'.'mksearch'.'/locallang_db.xml:scheduler_indexTask_name',
+    'description' => 'LLL:EXT:'.'mksearch'.'/locallang_db.xml:scheduler_indexTask_description',
     'additionalFields' => 'tx_mksearch_scheduler_IndexTaskAddFieldProvider',
 ];
 
-if (tx_rnbase_util_Extensions::isLoaded('mksanitizedparameters')) {
-    require_once tx_rnbase_util_Extensions::extPath($_EXTKEY, 'ext_mksanitizedparameter_rules.php');
+if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('mksanitizedparameters')) {
+    require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch', 'ext_mksanitizedparameter_rules.php');
 }
 
-require_once tx_rnbase_util_Extensions::extPath($_EXTKEY, 'Configuration/SignalSlotDispatcher.php');
-require_once tx_rnbase_util_Extensions::extPath($_EXTKEY, 'Configuration/XClasses.php');
+require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch', 'Configuration/SignalSlotDispatcher.php');
+require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch', 'Configuration/XClasses.php');
 
-Tx_Rnbase_Utility_Cache::addExcludedParametersForCacheHash([
+\Sys25\RnBase\Utility\CHashUtility::addExcludedParametersForCacheHash([
     'mksearch[pb-search-pointer]',
     'mksearch[submit]',
     'mksearch[term]',
+    'mksearch[sort]',
+    'mksearch[sortorder]',
+    'mksearch[fq]',
+    'mksearch[combination]',
+    'mksearch[NK_addfq]',
+    'mksearch[NK_remfq]',
 ]);
 
 // eigenes Feld für Vorbelegung je nach Indexer
@@ -80,10 +85,4 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry']['mksearch_index
 // in indexers works correct
 $GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'] .= ',no_search';
 
-// realurl
-if (tx_rnbase_util_Extensions::isLoaded('realurl')) {
-    $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['realurl']['ConfigurationReader_postProc']['mksearch'] =
-        \DMK\Mksearch\Hooks\RealUrlConfigurationReader::class.'->addMksearchToBannedUrlsRegExp';
-}
-
-require_once tx_rnbase_util_Extensions::extPath($_EXTKEY, 'Classes/Constants.php');
+require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch', 'Classes/Constants.php');

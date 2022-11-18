@@ -35,7 +35,7 @@ use Elastica\Search;
 /**
  * Service "ElasticSearch search engine" for the "mksearch" extension.
  */
-class tx_mksearch_service_engine_ElasticSearch extends Tx_Rnbase_Service_Base implements tx_mksearch_interface_SearchEngine
+class tx_mksearch_service_engine_ElasticSearch extends \Sys25\RnBase\Typo3Wrapper\Service\AbstractService implements tx_mksearch_interface_SearchEngine
 {
     /**
      * Index used for searching and indexing.
@@ -77,7 +77,7 @@ class tx_mksearch_service_engine_ElasticSearch extends Tx_Rnbase_Service_Base im
     public function __construct()
     {
         $this->config = $this->getConfiguration();
-        $useInternalElasticaLib = Tx_Rnbase_Configuration_Processor::getExtensionCfgValue(
+        $useInternalElasticaLib = \Sys25\RnBase\Configuration\Processor::getExtensionCfgValue(
             'mksearch',
             'useInternalElasticaLib'
         );
@@ -144,7 +144,7 @@ class tx_mksearch_service_engine_ElasticSearch extends Tx_Rnbase_Service_Base im
      */
     protected function getLogger()
     {
-        return tx_rnbase_util_Logger;
+        return \Sys25\RnBase\Utility\Logger;
     }
 
     /**
@@ -187,7 +187,7 @@ class tx_mksearch_service_engine_ElasticSearch extends Tx_Rnbase_Service_Base im
             $result['items'] = $items;
 
             if ($options['debug']) {
-                tx_rnbase_util_Debug::debug(
+                \Sys25\RnBase\Utility\Debug::debug(
                     ['options' => $options, 'result' => $result],
                     __METHOD__.' Line: '.__LINE__
                 );
@@ -373,7 +373,7 @@ class tx_mksearch_service_engine_ElasticSearch extends Tx_Rnbase_Service_Base im
     private function handleSorting(Query $elasticaQuery, array $options)
     {
         if ($options['sort']) {
-            list($field, $order) = Tx_Rnbase_Utility_Strings::trimExplode(' ', $options['sort'],
+            list($field, $order) = \Sys25\RnBase\Utility\Strings::trimExplode(' ', $options['sort'],
                 true);
             $elasticaQuery->addSort(
                 [
@@ -416,10 +416,11 @@ class tx_mksearch_service_engine_ElasticSearch extends Tx_Rnbase_Service_Base im
         if ($elasticSearchResult = $searchResult->getResults()) {
             /* @var $item Result */
             foreach ($elasticSearchResult as $item) {
-                $hit = tx_rnbase::makeInstance(
+                /* @var $hit tx_mksearch_model_SearchHit */
+                $hit = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
                     'tx_mksearch_model_SearchHit',
                     $item->getData()
-                    );
+                );
                 $item->getIndex() && $hit->setIndex($item->getIndex());
                 $item->getType() && $hit->setType($item->getType());
                 $item->getId() && $hit->setId($item->getId());
@@ -534,7 +535,7 @@ class tx_mksearch_service_engine_ElasticSearch extends Tx_Rnbase_Service_Base im
     protected function getElasticaCredentialsFromCredentialsString($credentialString)
     {
         $this->credentialsString = $credentialString;
-        $serverCredentials = tx_rnbase_util_Strings::trimExplode(';', $credentialString, true);
+        $serverCredentials = \Sys25\RnBase\Utility\Strings::trimExplode(';', $credentialString, true);
 
         $this->indexName = $serverCredentials[0];
         unset($serverCredentials[0]);
@@ -558,7 +559,7 @@ class tx_mksearch_service_engine_ElasticSearch extends Tx_Rnbase_Service_Base im
     private function getElasticaCredentialArrayFromIndexCredentialStringForOneServer(
         $credentialString
     ) {
-        $serverCredential = tx_rnbase_util_Strings::trimExplode(',', $credentialString);
+        $serverCredential = \Sys25\RnBase\Utility\Strings::trimExplode(',', $credentialString);
 
         return [
             'host' => $serverCredential[0],
@@ -743,7 +744,7 @@ class tx_mksearch_service_engine_ElasticSearch extends Tx_Rnbase_Service_Base im
      */
     public function makeIndexDocInstance($extKey, $contentType)
     {
-        return tx_rnbase::makeInstance(
+        return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
             'tx_mksearch_model_IndexerDocumentBase',
             $extKey,
             $contentType,
@@ -759,7 +760,7 @@ class tx_mksearch_service_engine_ElasticSearch extends Tx_Rnbase_Service_Base im
     public function getStatus()
     {
         /* @var $status tx_mksearch_util_Status */
-        $status = tx_rnbase::makeInstance('tx_mksearch_util_Status');
+        $status = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_mksearch_util_Status');
 
         $id = -1;
         $msg = 'Down. Maybe not started?';

@@ -1,13 +1,14 @@
 <?php
 
-namespace DMK\Mksearch\Hooks;
+namespace DMK\Mksearch\ViewHelpers;
 
-use DmitryDulepov\Realurl\Configuration\ConfigurationReader;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
-/**
- * Copyright notice.
+/***************************************************************
+ * Copyright notice
  *
- * (c) DMK E-Business GmbH <dev@dmk-ebusiness.de>
+ * (c) DMK E-BUSINESS GmbH <dev@dmk-ebusiness.de>
  * All rights reserved
  *
  * This script is part of the TYPO3 project. The TYPO3 project is
@@ -25,24 +26,31 @@ use DmitryDulepov\Realurl\Configuration\ConfigurationReader;
  * GNU General Public License for more details.
  *
  * This copyright notice MUST APPEAR in all copies of the script!
- */
+ ***************************************************************/
 
 /**
- * Class RealUrlAutoConfiguration.
+ * Class IndexingInProgressViewHelper.
  *
  * @author  Hannes Bochmann
  * @license http://www.gnu.org/licenses/lgpl.html
  *          GNU Lesser General Public License, version 3 or later
  */
-class RealUrlConfigurationReader
+class IndexingInProgressViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper
 {
+    use CompileWithRenderStatic;
+
     /**
-     * @param array               $parameters
-     * @param ConfigurationReader $configurationReader
+     * Plain HTML should be returned, no output escaping allowed.
+     *
+     * @var bool
      */
-    public function addMksearchToBannedUrlsRegExp(array &$parameters, ConfigurationReader $configurationReader)
-    {
-        $parameters['configuration']['cache']['banUrlsRegExp'] =
-            str_replace('tx_solr', 'tx_solr|mksearch', $configurationReader->get('cache/banUrlsRegExp'));
+    protected $escapeOutput = false;
+
+    public static function renderStatic(
+        array $arguments,
+        \Closure $renderChildrenClosure,
+        RenderingContextInterface $renderingContext
+    ) {
+        return \tx_mksearch_service_internal_Index::isIndexingInProgress();
     }
 }

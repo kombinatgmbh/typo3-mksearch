@@ -1,6 +1,32 @@
 Changelog
 =========
 
+10.1.4
+-----
+
+- it's now possible to put all references into queue when indexing a file
+
+10.1.1 - 10.1.3
+-----
+
+- Bugfixes
+
+10.1.0
+-----
+
+- require at least rn_base 1.15.x
+
+10.0.1 - 10.0.6
+-----
+
+-   Bugfixes
+
+10.0.0
+-----
+
+-   dropped support for TYPO3 8.7, realurl and templavoila. 
+-   added support for TYPO3 10.4
+
 9.5.9
 -----
 
