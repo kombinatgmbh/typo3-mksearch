@@ -26,14 +26,15 @@ namespace DMK\Mksearch\ViewHelpers\Format;
  *                  GNU Lesser General Public License, version 3 or later
  */
 
+use TYPO3\CMS\Core\Http\ApplicationType;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 class HtmlViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Format\HtmlViewHelper
 {
-    ////////
+    // //////
     // We have to overwrite the whole renderStatic() method, because it uses self for the method call
-    ////////
+    // //////
 
     /**
      * @param array                     $arguments
@@ -45,14 +46,17 @@ class HtmlViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Format\HtmlViewHelper
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext)
     {
         $parseFuncTSPath = $arguments['parseFuncTSPath'];
-        if (TYPO3_MODE === 'BE') {
+        $request = $renderingContext->getRequest();
+        $isBackendRequest = $request->getAttribute('applicationType')
+            && ApplicationType::fromRequest($request)->isBackend();
+        if ($isBackendRequest) {
             static::simulateFrontendEnvironment();
         }
         $value = $renderChildrenClosure();
         $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
         $contentObject->start([]);
         $content = $contentObject->parseFunc($value, [], '< '.$parseFuncTSPath);
-        if (TYPO3_MODE === 'BE') {
+        if ($isBackendRequest) {
             static::resetFrontendEnvironment();
         }
 

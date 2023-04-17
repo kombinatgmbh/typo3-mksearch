@@ -53,7 +53,7 @@ class tx_mksearch_util_FacetBuilder
     {
         static $instance;
         $class = empty($class) ? 'tx_mksearch_util_FacetBuilder' : $class;
-        if (!$instance[$class]) {
+        if (!($instance[$class] ?? '')) {
             $instance[$class] = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($class, $options);
         }
 
@@ -105,9 +105,9 @@ class tx_mksearch_util_FacetBuilder
     public function buildFacets($facetData)
     {
         $facetGroups = array_merge(
-            $this->buildFieldFacets($facetData->facet_fields),
-            $this->buildQueryFacets($facetData->facet_queries),
-            $this->buildPivotFacets($facetData->facet_pivot)
+            $this->buildFieldFacets($facetData->facet_fields ?? null),
+            $this->buildQueryFacets($facetData->facet_queries ?? null),
+            $this->buildPivotFacets($facetData->facet_pivot ?? null)
         );
         // TODO: RANGE-Facet integrieren
 
@@ -214,7 +214,7 @@ class tx_mksearch_util_FacetBuilder
                 (string) $pivot->count,
                 tx_mksearch_model_Facet::TYPE_PIVOT
             );
-            $field->addChild($this->buildPivotChildFacets($pivot->pivot));
+            $field->addChild($this->buildPivotChildFacets($pivot->pivot ?? null));
             $fields[] = $field;
         }
 
@@ -372,8 +372,4 @@ class tx_mksearch_util_FacetBuilder
 
         return $var;
     }
-}
-
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/util/class.tx_mksearch_util_FacetBuilder.php']) {
-    include_once $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/util/class.tx_mksearch_util_FacetBuilder.php'];
 }

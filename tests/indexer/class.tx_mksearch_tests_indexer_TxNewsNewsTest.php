@@ -31,10 +31,7 @@
  */
 class tx_mksearch_tests_indexer_TxNewsNewsTest extends tx_mksearch_tests_Testcase
 {
-    /**
-     * Set up testcase.
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
         if (!\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('news')) {
             $this->markTestSkipped('tx_news is not installed!');
@@ -46,6 +43,7 @@ class tx_mksearch_tests_indexer_TxNewsNewsTest extends tx_mksearch_tests_Testcas
      * Testet die indexData Methode.
      *
      * @group unit
+     *
      * @test
      */
     public function testGetContentType()
@@ -65,6 +63,7 @@ class tx_mksearch_tests_indexer_TxNewsNewsTest extends tx_mksearch_tests_Testcas
      * Testet die indexData Methode.
      *
      * @group unit
+     *
      * @test
      */
     public function testHandleCategoryChanged()
@@ -73,7 +72,7 @@ class tx_mksearch_tests_indexer_TxNewsNewsTest extends tx_mksearch_tests_Testcas
             \Sys25\RnBase\Database\Connection::class,
             ['doSelect']
         );
-        ($connection
+        $connection
             ->expects(self::once())
             ->method('doSelect')
             ->with(
@@ -88,7 +87,7 @@ class tx_mksearch_tests_indexer_TxNewsNewsTest extends tx_mksearch_tests_Testcas
                 ),
                 $this->equalTo(
                     [
-                        'where' => 'CATMM.uid_local = 5',
+                        'where' => 'CATMM.tablenames = "tx_news_domain_model_news" AND (CATMM.uid_local = 5)',
                         'orderby' => 'sorting_foreign DESC',
                     ]
                 )
@@ -102,35 +101,35 @@ class tx_mksearch_tests_indexer_TxNewsNewsTest extends tx_mksearch_tests_Testcas
                     ]
                 )
             )
-        );
+        ;
 
         $indexSrv = $this->getMock(
             'tx_mksearch_service_internal_Index',
             ['addRecordToIndex']
         );
-        ($indexSrv
+        $indexSrv
             ->expects(self::exactly(3))
             ->method('addRecordToIndex')
             ->with(
                 $this->equalTo('tx_news_domain_model_news'),
                 $this->logicalOr(6, 8, 10)
             )
-        );
+        ;
 
         $indexer = $this->getMock(
             'tx_mksearch_indexer_TxNewsNews',
             ['getDatabaseConnection', 'getIntIndexService']
         );
-        ($indexer
+        $indexer
             ->expects(self::once())
             ->method('getDatabaseConnection')
             ->will(self::returnValue($connection))
-        );
-        ($indexer
+        ;
+        $indexer
             ->expects(self::once())
             ->method('getIntIndexService')
             ->will(self::returnValue($indexSrv))
-        );
+        ;
 
         $stopIndexing = $this->callInaccessibleMethod(
             [$indexer, 'stopIndexing'],
@@ -149,6 +148,7 @@ class tx_mksearch_tests_indexer_TxNewsNewsTest extends tx_mksearch_tests_Testcas
      * Testet die indexData Methode.
      *
      * @group unit
+     *
      * @test
      */
     public function testIndexData()
@@ -184,9 +184,7 @@ class tx_mksearch_tests_indexer_TxNewsNewsTest extends tx_mksearch_tests_Testcas
                 'news_text_s' => 'html in body text',
                 'news_text_t' => 'html in body text',
                 // dates
-                'datetime_dt' => tx_mksearch_util_Misc::getIsoDate(
-                    new \DateTime('@'.$GLOBALS['EXEC_TIME'])
-                ),
+                'datetime_dt' => '2023-02-14T16:15:00Z',
                 // tags
                 'keywords_ms' => ['Tag1', 'Tag2'],
                 // category data
@@ -215,7 +213,7 @@ class tx_mksearch_tests_indexer_TxNewsNewsTest extends tx_mksearch_tests_Testcas
                 'uid' => '5',
                 'pid' => '7',
                 'tstamp' => $GLOBALS['EXEC_TIME'],
-                'datetime' => new \DateTime('@'.$GLOBALS['EXEC_TIME']),
+                'datetime' => new \DateTime('2023-02-14 17:15:00', new DateTimeZone('Europe/Berlin')),
                 'title' => 'first news',
                 'teaser' => 'the first news',
                 'bodytext' => '<span>html in body text</span>',
@@ -291,7 +289,7 @@ class tx_mksearch_tests_indexer_TxNewsNewsTest extends tx_mksearch_tests_Testcas
             ['createLocalizedExtbaseDomainModel']
         );
 
-        ($indexer
+        $indexer
             ->expects(self::once())
             ->method('createLocalizedExtbaseDomainModel')
             ->with(
@@ -300,15 +298,8 @@ class tx_mksearch_tests_indexer_TxNewsNewsTest extends tx_mksearch_tests_Testcas
                 'GeorgRinger\\News\\Domain\\Repository\\NewsRepository'
             )
             ->will(self::returnValue($model))
-        );
+        ;
 
         return $indexer;
     }
-}
-
-if ((
-    defined('TYPO3_MODE') &&
-    $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/tests/indexer/class.tx_mksearch_tests_indexer_TxNewsNewsTest.php']
-)) {
-    include_once $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/tests/indexer/class.tx_mksearch_tests_indexer_TxNewsNewsTest.php'];
 }

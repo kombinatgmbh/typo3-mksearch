@@ -18,11 +18,13 @@ abstract class tx_mksearch_mod1_handler_Base
      */
     public function showScreen($template, \Sys25\RnBase\Backend\Module\IModule $mod, $options)
     {
+        $markerArray = [];
+
         return tx_mksearch_mod1_util_Template::parseList(
             $template,
             $mod,
-            $markerArray = [],
-            $this->getSearcher($mod, $options = []),
+            $markerArray,
+            $this->getSearcher($mod, $options),
             strtoupper($this->getSubID())
         );
     }
@@ -54,8 +56,4 @@ abstract class tx_mksearch_mod1_handler_Base
     {
         return '###LABEL_HANDLER_'.strtoupper($this->getSubID()).'###';
     }
-}
-
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/mod1/handler/class.tx_mksearch_mod1_handler_Base.php']) {
-    include_once $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/mod1/handler/class.tx_mksearch_mod1_handler_Base.php'];
 }

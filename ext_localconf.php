@@ -1,6 +1,6 @@
 <?php
 
-if (!defined('TYPO3_MODE')) {
+if (!defined('TYPO3')) {
     exit('Access denied.');
 }
 
@@ -12,9 +12,9 @@ require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksear
 
 // Register hooks
 // Hooks for converting Zend_Lucene index data
-//$GLOBALS ['TYPO3_CONF_VARS']['EXTCONF']['mksearch']['engine_ZendLucene_indexNew_beforeAddingCoreDataToDocument'][] =
+// $GLOBALS ['TYPO3_CONF_VARS']['EXTCONF']['mksearch']['engine_ZendLucene_indexNew_beforeAddingCoreDataToDocument'][] =
 //  'EXT:' . 'mksearch' . '/hooks/class.tx_mksearch_hooks_EngineZendLucene.php:tx_mksearch_hooks_EngineZendLucene->convertFields';
-//$GLOBALS ['TYPO3_CONF_VARS']['EXTCONF']['mksearch']['engine_ZendLucene_indexNew_beforeAddingAdditionalDataToDocument'][] =
+// $GLOBALS ['TYPO3_CONF_VARS']['EXTCONF']['mksearch']['engine_ZendLucene_indexNew_beforeAddingAdditionalDataToDocument'][] =
 //  'EXT:' . 'mksearch' . '/hooks/class.tx_mksearch_hooks_EngineZendLucene.php:tx_mksearch_hooks_EngineZendLucene->convertFields';
 
 // rnbase insert and update hooks (requires rn_base 0.14.6)
@@ -50,8 +50,8 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['proc
 // Register information for the test and sleep tasks
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks']['tx_mksearch_scheduler_IndexTask'] = [
     'extension' => 'mksearch',
-    'title' => 'LLL:EXT:'.'mksearch'.'/locallang_db.xml:scheduler_indexTask_name',
-    'description' => 'LLL:EXT:'.'mksearch'.'/locallang_db.xml:scheduler_indexTask_description',
+    'title' => 'LLL:EXT:mksearch/Resources/Private/Language/locallang_db.xlf:scheduler_indexTask_name',
+    'description' => 'LLL:EXT:mksearch/Resources/Private/Language/locallang_db.xlf:scheduler_indexTask_description',
     'additionalFields' => 'tx_mksearch_scheduler_IndexTaskAddFieldProvider',
 ];
 
@@ -59,7 +59,6 @@ if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('mksanitizedpar
     require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch', 'ext_mksanitizedparameter_rules.php');
 }
 
-require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch', 'Configuration/SignalSlotDispatcher.php');
 require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch', 'Configuration/XClasses.php');
 
 \Sys25\RnBase\Utility\CHashUtility::addExcludedParametersForCacheHash([

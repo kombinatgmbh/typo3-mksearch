@@ -83,8 +83,8 @@ class tx_mksearch_util_Filter
                 $confId.'params.'.$qualifier.'.',
                 'PARAM_'.strtoupper($qualifier)
             );
-            //wenn keine params gesetzt sind, kommt der marker ungeparsed raus.
-            //also ersetzen wir diesen prinzipiell am ende durch ein leeren string.
+            // wenn keine params gesetzt sind, kommt der marker ungeparsed raus.
+            // also ersetzen wir diesen prinzipiell am ende durch ein leeren string.
             $termTemplate = preg_replace(
                 '/(###PARAM_'.strtoupper($qualifier).'_)\w.*###/',
                 '',
@@ -141,7 +141,7 @@ class tx_mksearch_util_Filter
                         \Sys25\RnBase\Domain\Model\BaseModel::class,
                         [
                             'uid' => $fieldId,
-                            'caption' => is_array($config) ? $config['caption'] : $config,
+                            'caption' => is_array($config) ? ($config['caption'] ?? '') : $config,
                             'selected' => $fieldId == $fieldActive ? $activeMark : '',
                         ]
                     );
@@ -153,7 +153,7 @@ class tx_mksearch_util_Filter
                     $template,
                     \Sys25\RnBase\Frontend\Marker\SimpleMarker::class,
                     $confId.'formfields.'.$field.'.',
-                    ($fieldMarker),
+                    $fieldMarker,
                     $configurations->getFormatter()
                 );
             }
@@ -371,7 +371,4 @@ class tx_mksearch_util_Filter
 
         return $sFq;
     }
-}
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/util/class.tx_mksearch_util_Filter.php']) {
-    include_once $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/util/class.tx_mksearch_util_Filter.php'];
 }

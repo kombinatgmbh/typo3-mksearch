@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" target-language="de" datatype="plaintext" original="messages" date="2022-05-09T10:51:13Z" product-name="mksearch">
+		<header/>
+		<body>
+			<trans-unit id="general.undef" resname="general.undef"  approved="yes">
+				<source>Undefined</source>
+				<target>Undefiniert</target>
+			</trans-unit>
+			<trans-unit id="scheduler_indexTask_name" resname="scheduler_indexTask_name"  approved="yes">
+				<source>MKSearch Indexing</source>
+				<target>MKSearch Indizierung</target>
+			</trans-unit>
+			<trans-unit id="scheduler_indexTask_description" resname="scheduler_indexTask_description"  approved="yes">
+				<source>Start indexing process of documents</source>
+				<target>Startet die Indizierung von Dokumenten</target>
+			</trans-unit>
+			<trans-unit id="scheduler_indexTask_field_amountOfItems" resname="scheduler_indexTask_field_amountOfItems"  approved="yes">
+				<source>Amount of items to be indexed per run</source>
+				<target>Anzahl von Dokumenten pro Indexlauf</target>
+			</trans-unit>
+			<trans-unit id="scheduler_indexTask_taskinfo" resname="scheduler_indexTask_taskinfo"  approved="yes">
+				<source>Index %d items per run. Currently %d items in queue.</source>
+				<target>Es werden %d Dokumente pro Lauf indiziert. Aktuell sind %d Dokumente in der Warteschlange.</target>
+			</trans-unit>
+			<trans-unit id="plugin_common_enable" resname="plugin_common_enable"  approved="yes">
+				<source>Enable</source>
+				<target>Aktivieren</target>
+			</trans-unit>
+			<trans-unit id="plugin.mksearch.tt_content.header_layout" resname="plugin.mksearch.tt_content.header_layout"  approved="yes">
+				<source>Hidden (but indexed via mksearch)</source>
+				<target>Verborgen (aber via mksearch indiziert)</target>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_mksearch_is_indexable" resname="tt_content.tx_mksearch_is_indexable"  approved="yes">
+				<source>indexable through mksearch?</source>
+				<target>durch mksearch indizierbar?</target>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_mksearch_is_indexable.use_indexer_config" resname="tt_content.tx_mksearch_is_indexable.use_indexer_config"  approved="yes">
+				<source>use configuration of indexer</source>
+				<target>Konfiguration des Indexer verwenden</target>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_mksearch_is_indexable.yes" resname="tt_content.tx_mksearch_is_indexable.yes"  approved="yes">
+				<source>yes</source>
+				<target>Ja</target>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_mksearch_is_indexable.no" resname="tt_content.tx_mksearch_is_indexable.no"  approved="yes">
+				<source>no</source>
+				<target>Nein</target>
+			</trans-unit>
+			<trans-unit id="plugin.mksearch.flexform.options.group.enable" resname="plugin.mksearch.flexform.options.group.enable"  approved="yes">
+				<source>enable group? (might slow down the search a bit)</source>
+				<target>Gruppierung aktivieren? (könnte die Suche etwas verlangsamen)</target>
+			</trans-unit>
+			<trans-unit id="plugin.mksearch.flexform.options.group.useNumberOfGroupsAsSearchResultCount" resname="plugin.mksearch.flexform.options.group.useNumberOfGroupsAsSearchResultCount"  approved="yes">
+				<source>use number of groups as search result count?</source>
+				<target>Anzahl der Gruppen als Anzahl der Suchergebnisse anzeigen?</target>
+			</trans-unit>
+			<trans-unit id="plugin.mksearch.flexform.options.group.field" resname="plugin.mksearch.flexform.options.group.field"  approved="yes">
+				<source>group field</source>
+				<target>Gruppierungsfeld</target>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

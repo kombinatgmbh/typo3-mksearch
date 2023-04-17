@@ -21,7 +21,6 @@
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
-require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch', 'lib/Apache/Solr/Document.php');
 
 /**
  * tx_mksearch_tests_indexer_IrfaqTest.
@@ -33,12 +32,7 @@ require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksear
  */
 class tx_mksearch_tests_indexer_IrfaqTest extends tx_mksearch_tests_Testcase
 {
-    /**
-     * {@inheritdoc}
-     *
-     * @see tx_mksearch_tests_Testcase::setUp()
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
         if (!\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('irfaq')) {
             self::markTestSkipped('irfaq nicht installiert');
@@ -365,6 +359,7 @@ class tx_mksearch_tests_indexer_IrfaqTest extends tx_mksearch_tests_Testcase
 
     /**
      * @group unit
+     *
      * @dataProvider getIncludeOptions
      *
      * @param array $options

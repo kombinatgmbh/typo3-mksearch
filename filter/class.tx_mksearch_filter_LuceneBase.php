@@ -244,7 +244,7 @@ class tx_mksearch_filter_LuceneBase extends tx_mksearch_filter_BaseFilter implem
                     $formTxt = '<!-- NO SUBPART '.$subpartName.' FOUND -->';
                 }
             } else {
-                $formTxt = '<!-- NO FORM TEMPLATE FOUND: '.$confId.'.template'.' -->';
+                $formTxt = '<!-- NO FORM TEMPLATE FOUND: '.$confId.'.template -->';
             }
             // Insert form template into main template
             $template = str_replace('###'.$conf['config.']['marker'].'###', $formTxt, $template);
@@ -346,7 +346,7 @@ class tx_mksearch_filter_LuceneBase extends tx_mksearch_filter_BaseFilter implem
         if ($this->isSearch) {
             $emptyMsg = $configurations->getLL($configurations->get($confId.'listinfo.llkeyEmpty'));
             if ($configurations->get($confId.'listinfo.form')) {
-                //Puts a marker for the form if needed. The Form must be after the plugin.
+                // Puts a marker for the form if needed. The Form must be after the plugin.
                 $GLOBALS[$configurations->get($confId.'listinfo.formclass')]['enabled'] = 1;
             }
 
@@ -376,8 +376,4 @@ class tx_mksearch_filter_LuceneBase extends tx_mksearch_filter_BaseFilter implem
 
         return $this->filterUtility;
     }
-}
-
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/filter/class.tx_mksearch_filter_LuceneBase.php']) {
-    include_once $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/filter/class.tx_mksearch_filter_LuceneBase.php'];
 }

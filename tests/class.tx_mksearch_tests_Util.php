@@ -71,7 +71,7 @@ class tx_mksearch_tests_Util
     public static function hooksSetUp($hooks = null)
     {
         if (!is_array($hooks)) {
-            $hooks = array_keys($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['mksearch']);
+            $hooks = array_keys($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['mksearch'] ?? []);
         }
         foreach ($hooks as $hook) {
             if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['mksearch'][$hook])) {
@@ -148,25 +148,15 @@ class tx_mksearch_tests_Util
      */
     public static function loadSingleExtTablesFiles(array $extensions)
     {
-        // In general it is recommended to not rely on it to be globally defined in that
-        // scope, but we can not prohibit this without breaking backwards compatibility
-        global $T3_SERVICES, $T3_VAR, $TYPO3_CONF_VARS;
-        global $TBE_MODULES, $TBE_MODULES_EXT, $TCA;
-        global $PAGES_TYPES, $TBE_STYLES, $FILEICONS;
         // Load each ext_tables.php file of loaded extensions
+        $packageManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Package\PackageManager::class);
         foreach ($extensions as $extensionKey) {
-            if (empty($GLOBALS['TYPO3_LOADED_EXT'][$extensionKey])) {
+            if (!$packageManager->isPackageActive($extensionKey)) {
                 continue;
             }
-            $extensionInformation = $GLOBALS['TYPO3_LOADED_EXT'][$extensionKey];
-            if (is_array($extensionInformation) && $extensionInformation['ext_tables.php']) {
-                // 'mksearch' and $_EXTCONF are available in ext_tables.php
-                // and are explicitly set in cached file as well
-                $_EXTCONF = $GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$extensionKey];
-                require $extensionInformation['ext_tables.php'];
-                // loads the dynamicConfigFile
-                // @TODO: implement, if needet!
-                // static::loadNewTcaColumnsConfigFiles();
+            $extTablesFile = $packageManager->getPackage($extensionKey)->getPackagePath().'ext_tables.php';
+            if (is_file($extTablesFile)) {
+                require $extTablesFile;
             }
         }
     }
@@ -271,22 +261,10 @@ class tx_mksearch_tests_Util
             $extKey = $extKeyOrIndexer;
         } // falscher datentyp
         else {
-            throw new Exception('First argument of getIndexerDocument has to be an "string"'.' or instance of "tx_mksearch_interface_Indexer", '.(is_object($extKeyOrIndexer) ? get_class($extKeyOrIndexer) : gettype($extKeyOrIndexer)).' given.');
+            throw new Exception('First argument of getIndexerDocument has to be an "string" or instance of "tx_mksearch_interface_Indexer", '.(is_object($extKeyOrIndexer) ? get_class($extKeyOrIndexer) : gettype($extKeyOrIndexer)).' given.');
         }
 
         return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($documentClass, $extKey, $cType);
-    }
-
-    /**
-     * Disabled das Logging über die Devlog Extension für die
-     * gegebene Extension.
-     *
-     * @param string $extKey
-     * @param bool   $bDisable
-     */
-    public static function disableDevlog($extKey = 'devlog', $bDisable = true)
-    {
-        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$extKey]['nolog'] = $bDisable;
     }
 
     /**
@@ -321,7 +299,7 @@ class tx_mksearch_tests_Util
     public static function unloadExtensionForTypo362OrHigher($extensionKey)
     {
         // wir kommen an den Pfad zur Package Datei nur über Reflection
-        $packageManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Package\\PackageManager');
+        $packageManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Package\PackageManager::class);
         $packageStatesPathAndFilename = new ReflectionProperty('TYPO3\\CMS\\Core\\Package\\PackageManager', 'packageStatesPathAndFilename');
         $packageStatesPathAndFilename->setAccessible(true);
 
@@ -332,7 +310,7 @@ class tx_mksearch_tests_Util
 
         $extensionManagementUtility = new TYPO3\CMS\Core\Utility\ExtensionManagementUtility();
 
-        $method = new ReflectionMethod('TYPO3\\CMS\\Core\\Package\\PackageManager', 'getDependencyArrayForPackage');
+        $method = new ReflectionMethod(\TYPO3\CMS\Core\Package\PackageManager::class, 'getDependencyArrayForPackage');
         $method->setAccessible(true);
 
         // falls eine extension von gridelements abhängt, müssen wir diese auch deinstallieren
@@ -370,7 +348,7 @@ class tx_mksearch_tests_Util
     public static function storeExtConf($extKey = 'mksearch', $overwrite = false)
     {
         if (!isset(self::$extConf[$extKey]) || $overwrite) {
-            self::$extConf[$extKey] = $GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$extKey];
+            self::$extConf[$extKey] = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'][$extKey] ?? [];
         }
     }
 
@@ -384,7 +362,7 @@ class tx_mksearch_tests_Util
     public static function restoreExtConf($extKey = 'mksearch')
     {
         if (isset(self::$extConf[$extKey])) {
-            $GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$extKey] = self::$extConf[$extKey];
+            $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'][$extKey] = self::$extConf[$extKey];
 
             return true;
         }
@@ -403,7 +381,7 @@ class tx_mksearch_tests_Util
     public static function setExtConfVar($cfgKey, $cfgValue, $extKey = 'mksearch')
     {
         // aktuelle Konfiguration auslesen
-        $extConfig = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$extKey]);
+        $extConfig = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'][$extKey] ?? [];
         // wenn keine Konfiguration existiert, legen wir eine an.
         if (!is_array($extConfig)) {
             $extConfig = [];
@@ -411,7 +389,7 @@ class tx_mksearch_tests_Util
         // neuen Wert setzen
         $extConfig[$cfgKey] = $cfgValue;
         // neue Konfiguration zurückschreiben
-        $GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$extKey] = serialize($extConfig);
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'][$extKey] = $extConfig;
     }
 
     /**
@@ -440,8 +418,4 @@ class tx_mksearch_tests_Util
             self::$addRootLineFieldsBackup = null;
         }
     }
-}
-
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/tests/class.tx_mksearch_tests_Util.php']) {
-    include_once $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/tests/class.tx_mksearch_tests_Util.php'];
 }

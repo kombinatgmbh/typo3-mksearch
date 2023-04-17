@@ -29,12 +29,7 @@
  */
 class tx_mksearch_tests_service_internal_IndexTest extends tx_mksearch_tests_Testcase
 {
-    /**
-     * (non-PHPdoc).
-     *
-     * @see tx_mksearch_tests_Testcase::setUp()
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
         tx_mksearch_tests_Util::storeExtConf();
         self::markTestIncomplete('Error: Call to a member function isConnected() on null');
@@ -42,12 +37,7 @@ class tx_mksearch_tests_service_internal_IndexTest extends tx_mksearch_tests_Tes
         $this->prepareLegacyTypo3DbGlobal();
     }
 
-    /**
-     * (non-PHPdoc).
-     *
-     * @see tx_mksearch_tests_Testcase::tearDown()
-     */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         tx_mksearch_tests_Util::restoreExtConf();
 
@@ -135,6 +125,7 @@ class tx_mksearch_tests_service_internal_IndexTest extends tx_mksearch_tests_Tes
      * test for tx_mksearch_service_internal_Index::addModelsToIndex.
      *
      * @group unit
+     *
      * @test
      */
     public function testAddModelsToIndex()
@@ -168,6 +159,7 @@ class tx_mksearch_tests_service_internal_IndexTest extends tx_mksearch_tests_Tes
 
     /**
      * @group unit
+     *
      * @dataProvider dataProviderDeleteDocumentIfNotCorrectWorkspaceTest
      */
     public function testDeleteDocumentIfNotCorrectWorkspace(

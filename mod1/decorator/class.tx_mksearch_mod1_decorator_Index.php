@@ -62,13 +62,13 @@ class tx_mksearch_mod1_decorator_Index
             case 'engine':
                 switch ($value) {
                     case 'zend_lucene':
-                        $ret = $GLOBALS['LANG']->sL('LLL:EXT:mksearch/locallang_db.xml:tx_mksearch_indices_engine_zendlucene');
+                        $ret = $GLOBALS['LANG']->sL('LLL:EXT:mksearch/Resources/Private/Language/locallang_db.xlf:tx_mksearch_indices_engine_zendlucene');
                         break;
                     case 'solr':
-                        $ret = $GLOBALS['LANG']->sL('LLL:EXT:mksearch/locallang_db.xml:tx_mksearch_indices_engine_solr');
+                        $ret = $GLOBALS['LANG']->sL('LLL:EXT:mksearch/Resources/Private/Language/locallang_db.xlf:tx_mksearch_indices_engine_solr');
                         break;
                     case 'elasticsearch':
-                        $ret = $GLOBALS['LANG']->sL('LLL:EXT:mksearch/locallang_db.xml:tx_mksearch_indices_engine_elasticsearch');
+                        $ret = $GLOBALS['LANG']->sL('LLL:EXT:mksearch/Resources/Private/Language/locallang_db.xlf:tx_mksearch_indices_engine_elasticsearch');
                         break;
                     default:
                         $ret = $value;
@@ -128,8 +128,4 @@ class tx_mksearch_mod1_decorator_Index
         // $out .= '<br />'; // @TODO: verbundene tabellen anhand von options ausgeben
         return '<div>'.$out.'</div>';
     }
-}
-
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/mod1/decorator/class.tx_mksearch_mod1_decorator_Index.php']) {
-    include_once $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/mod1/decorator/class.tx_mksearch_mod1_decorator_Index.php'];
 }

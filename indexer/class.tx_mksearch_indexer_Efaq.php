@@ -61,8 +61,8 @@ class tx_mksearch_indexer_Efaq implements tx_mksearch_interface_Indexer
         $indexDoc->setUid($sourceRecord['sys_language_uid'] ? $sourceRecord['l18n_parent'] : $sourceRecord['uid']);
 
         $title = empty($sourceRecord['kat']) ? '' : (
-                isset($options['titlePrefix']) ? $options['titlePrefix'].' ' : ''
-            ).trim($sourceRecord['kat']);
+            isset($options['titlePrefix']) ? $options['titlePrefix'].' ' : ''
+        ).trim($sourceRecord['kat']);
         $content = trim(trim($sourceRecord['question']).PHP_EOL.trim($sourceRecord['answer']));
 
         // indizieren?
@@ -88,7 +88,7 @@ class tx_mksearch_indexer_Efaq implements tx_mksearch_interface_Indexer
             );
         }
 
-        //done
+        // done
         return $indexDoc;
     }
 
@@ -132,8 +132,4 @@ titlePrefix = FAQ:
 #workspaceIds = 1,2,3
 CONFIG;
     }
-}
-
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/indexer/class.tx_mksearch_indexer_Efaq.php']) {
-    include_once $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/indexer/class.tx_mksearch_indexer_Efaq.php'];
 }

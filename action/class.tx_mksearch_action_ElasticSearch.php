@@ -121,13 +121,13 @@ class tx_mksearch_action_ElasticSearch extends tx_mksearch_action_AbstractSearch
             && is_array($conf = $configurations->get($confId.'hit.pagebrowser.'))
         ) {
             // PageBrowser initialisieren
-            $pageBrowserId = $conf['pbid'] ? $conf['pbid'] :
-                            'search'.$configurations->getPluginId();
+            $pageBrowserId = $conf['pbid'] ?? 'search'.$configurations->getPluginId();
             /* @var $pageBrowser \Sys25\RnBase\Utility\PageBrowser */
             $pageBrowser = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
                 \Sys25\RnBase\Utility\PageBrowser::class,
                 $pageBrowserId
             );
+
             $pageBrowser->setState($parameters, $listSize, $options['limit']);
             $state = $pageBrowser->getState();
 
@@ -157,8 +157,4 @@ class tx_mksearch_action_ElasticSearch extends tx_mksearch_action_AbstractSearch
     {
         return 'tx_mksearch_view_Search';
     }
-}
-
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/action/class.tx_mksearch_action_ElasticSearch.php']) {
-    include_once $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/action/class.tx_mksearch_action_ElasticSearch.php'];
 }

@@ -50,7 +50,7 @@ class tx_mksearch_marker_Search extends \Sys25\RnBase\Frontend\Marker\SimpleMark
             $template = $this->addInfo($template, $item, $formatter, $confId.'extrainfo.', $marker.'_EXTRAINFO');
         }
         // Fill MarkerArray
-        $unused = $this->findUnusedCols($item->getProperty(), $template, $marker);
+        $unused = \Sys25\RnBase\Frontend\Marker\MarkerUtility::findUnusedAttributes($item, $template, $marker);
         $initFields = $this->getInitFields($template, $item, $formatter, $confId, $marker);
         $markerArray = $formatter->getItemMarkerArrayWrapped($item->getProperty(), $confId, $unused, $marker.'_', $initFields);
 
@@ -82,8 +82,8 @@ class tx_mksearch_marker_Search extends \Sys25\RnBase\Frontend\Marker\SimpleMark
             $glue = explode($splitter, $glue);
             $glue = $glue[1];
         }
-        //wenn wir ein array haben, holen wir uns dazu eine
-        //kommaseparierte Liste um damit einfach im FE arbeiten zu können
+        // wenn wir ein array haben, holen wir uns dazu eine
+        // kommaseparierte Liste um damit einfach im FE arbeiten zu können
         foreach ($item as $field => $value) {
             // wir sichern den originalen Wert von 'field' nach '_field'
             // beser wäre gewesen, den originalen wert beizubehalten
@@ -138,7 +138,7 @@ class tx_mksearch_marker_Search extends \Sys25\RnBase\Frontend\Marker\SimpleMark
                 $extraInfo = sprintf('<!-- NO FILE OR SUBPART FOUND: %s -->', $e->getMessage());
             }
         } else {
-            $extraInfo = '<!-- NO MARKER-CLASS FOUND: '.$typeConfId.'markerClass'.' -->';
+            $extraInfo = '<!-- NO MARKER-CLASS FOUND: '.$typeConfId.'markerClass -->';
         }
 
         $markerArray = ['###'.$markerPrefix.'###' => $extraInfo];

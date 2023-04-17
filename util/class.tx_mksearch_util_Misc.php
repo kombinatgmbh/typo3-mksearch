@@ -21,7 +21,6 @@
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
-require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch').'lib/Apache/Solr/Service.php';
 
 /**
  * Miscellaneous methods.
@@ -74,7 +73,7 @@ class tx_mksearch_util_Misc
         if (array_key_exists('include.', $options) && is_array($options['include.'])) {
             $aPages = (array_key_exists('pages', $options['include.']) && strlen(trim($options['include.']['pages']))) ? \Sys25\RnBase\Utility\Strings::intExplode(',', $options['include.']['pages']) : false;
             if (!is_array($aPages)) {
-                $aPages = $options['include.']['pages.'];
+                $aPages = $options['include.']['pages.'] ?? [];
             }
 
             if (is_array($aPages) && count($aPages)) {
@@ -85,7 +84,7 @@ class tx_mksearch_util_Misc
         if (array_key_exists('exclude.', $options) && is_array($options['exclude.'])) {
             $aPages = (array_key_exists('pages', $options['exclude.']) && strlen(trim($options['exclude.']['pages']))) ? \Sys25\RnBase\Utility\Strings::intExplode(',', $options['exclude.']['pages']) : false;
             if (!is_array($aPages)) {
-                $aPages = $options['exclude.']['pages.'];
+                $aPages = $options['exclude.']['pages.'] ?? [];
             }
             if (is_array($aPages) && count($aPages)) {
                 // Wenn das Element auf einer dieser Seiten eingebunden ist,
@@ -181,16 +180,16 @@ class tx_mksearch_util_Misc
      */
     public static function sanitizeTerm($sTerm)
     {
-        //wir brauchen 3 backslashes (\\\) um einen einfachen zu entwerten.
-        //der erste entwertet den zweiten für die hochkommas. der zweite
-        //entwertet den dritten für regex.
-        //ansonsten sind das alle Zeichen, die in Solr nicht auftauchen
-        //dürfen da sie zur such-syntax gehören
-        //genau dürfen nicht auftauchen: + - & | ! ( ) { } [ ] ^ " ~ * ? : \
-        //außerdem nehmen wir folgende raus um die Suche zu verfeinern:
-        //, . / # ' % < >
-        //eigentlich sollte dies aber ebenfalls durch Solr filter realisiert
-        //werden
+        // wir brauchen 3 backslashes (\\\) um einen einfachen zu entwerten.
+        // der erste entwertet den zweiten für die hochkommas. der zweite
+        // entwertet den dritten für regex.
+        // ansonsten sind das alle Zeichen, die in Solr nicht auftauchen
+        // dürfen da sie zur such-syntax gehören
+        // genau dürfen nicht auftauchen: + - & | ! ( ) { } [ ] ^ " ~ * ? : \
+        // außerdem nehmen wir folgende raus um die Suche zu verfeinern:
+        // , . / # ' % < >
+        // eigentlich sollte dies aber ebenfalls durch Solr filter realisiert
+        // werden
         return preg_replace('/[%,.&*+-\/\'!?#()\[\]\{\}"^|<>:\\\~]+/', '', $sTerm);
     }
 
@@ -263,7 +262,4 @@ class tx_mksearch_util_Misc
 
         return $bResetIndex ? array_merge($aArray) : $aArray;
     }
-}
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/util/class.tx_mksearch_util_Misc.php']) {
-    include_once $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/util/class.tx_mksearch_util_Misc.php'];
 }

@@ -190,7 +190,7 @@ class tx_mksearch_indexer_TxNewsNews extends tx_mksearch_indexer_Base
         );
 
         // Hook to append indexer data
-        if (!$news) {
+        if ($news) {
             \Sys25\RnBase\Utility\Misc::callHook(
                 'mksearch',
                 'indexer_TxNews_prepareDataBeforeAddFields',
@@ -218,7 +218,7 @@ class tx_mksearch_indexer_TxNewsNews extends tx_mksearch_indexer_Base
                     'uid' => $rawData['uid'],
                 ]
             );
-            if ($options['deleteOnAbort']) {
+            if ($options['deleteOnAbort'] ?? false) {
                 $indexDoc->setDeleted(true);
 
                 return $indexDoc;
@@ -268,7 +268,8 @@ class tx_mksearch_indexer_TxNewsNews extends tx_mksearch_indexer_Base
 
         $indexDoc->addField('pid', $news->getPid());
         $indexDoc->setTitle($news->getTitle());
-        $indexDoc->setTimestamp($news->getTstamp());
+        $timestamp = $news->getTstamp() instanceof DateTime ? $news->getTstamp()->getTimestamp() : $news->getTstamp();
+        $indexDoc->setTimestamp($timestamp);
 
         $content = trim(
             implode(
@@ -332,7 +333,7 @@ class tx_mksearch_indexer_TxNewsNews extends tx_mksearch_indexer_Base
         if ($news->getDatetime()) {
             $indexDoc->addField(
                 'datetime_dt',
-                tx_mksearch_util_Misc::getIsoDate($news->getDatetime()),
+                tx_mksearch_util_Misc::getISODateFromTimestamp($news->getDatetime()->getTimestamp()),
                 'keyword',
                 1.0,
                 'date'
@@ -423,7 +424,7 @@ class tx_mksearch_indexer_TxNewsNews extends tx_mksearch_indexer_Base
 
         $indexDoc->addField(
             'categorySinglePid_i',
-            $singlePid ?: (int) $options['defaultSinglePid']
+            $singlePid ?: (int) ($options['defaultSinglePid'] ?? 0)
         );
 
         $indexDoc->addField('categories_mi', array_keys($categories));
@@ -480,7 +481,7 @@ class tx_mksearch_indexer_TxNewsNews extends tx_mksearch_indexer_Base
         if (empty($options['indexInlineContentElements'])) {
             return '';
         }
-        tx_mksearch_util_Indexer::prepareTSFE($options['defaultSinglePid'], $options['lang']);
+        tx_mksearch_util_Indexer::prepareTSFE($options['defaultSinglePid'] ?? 0, $options['lang'] ?? 0);
 
         $ce = [];
         $contentElements = $news->getContentElements();
@@ -528,7 +529,7 @@ class tx_mksearch_indexer_TxNewsNews extends tx_mksearch_indexer_Base
         $cObj,
         /* \GeorgRinger\News\Domain\Model\TtContent */ $contentElement
     ) {
-        //we need to complete record to render the gridelement correctly
+        // we need to complete record to render the gridelement correctly
         $rawData = $this->getDatabaseConnection()->doSelect(
             '*',
             'tt_content',
@@ -647,11 +648,4 @@ deleteOnAbort = 0
 #localizationPid = 123
 CONF;
     }
-}
-
-if ((
-    defined('TYPO3_MODE') &&
-    $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/indexer/class.tx_mksearch_indexer_TxNewsNews.php']
-)) {
-    include_once $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/indexer/class.tx_mksearch_indexer_TxNewsNews.php'];
 }

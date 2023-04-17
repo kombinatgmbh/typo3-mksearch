@@ -36,6 +36,7 @@ class IndexerConfigurationFieldTest extends \Sys25\RnBase\Testing\BaseTestCase
 {
     /**
      * @group unit
+     *
      * @dataProvider dataProviderRenderWhenDefaultValueShouldNotBeSet
      */
     public function testRenderWhenDefaultValueShouldNotBeSet(array $databaseRow)
@@ -53,7 +54,7 @@ class IndexerConfigurationFieldTest extends \Sys25\RnBase\Testing\BaseTestCase
             ->willReturn('test');
 
         self::assertEquals('test', $field->render());
-        self::assertEmpty($field->_get('data')['parameterArray']['itemFormElValue']);
+        self::assertArrayNotHasKey('parameterArray', $field->_get('data'));
     }
 
     /**
@@ -77,7 +78,16 @@ class IndexerConfigurationFieldTest extends \Sys25\RnBase\Testing\BaseTestCase
      */
     public function testRenderWhenDefaultValueShouldBeSet()
     {
-        self::markTestIncomplete('Failed asserting that a string is not empty.');
+        \tx_mksearch_util_Config::registerIndexer(
+            'core',
+            'page',
+            'tx_mksearch_indexer_Page',
+            [
+                'pages',
+                // @todo handle page overlay
+                'pages_language_overlay',
+            ]
+        );
 
         $field = $this->getAccessibleMock(
             'DMK\\Mksearch\\Backend\\Form\\Element\\IndexerConfigurationField',

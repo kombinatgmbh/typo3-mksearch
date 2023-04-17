@@ -65,7 +65,7 @@ class tx_mksearch_hooks_IndexerAutoUpdate
             foreach (array_keys($uids) as $uid) {
                 // New element?
                 if (!is_numeric($uid)) {
-                    $uid = $dataHandler->substNEWwithIDs[$uid];
+                    $uid = $dataHandler->substNEWwithIDs[$uid] ?? 0;
                 }
                 $records[$table][] = (int) $uid;
             }
@@ -283,10 +283,10 @@ class tx_mksearch_hooks_IndexerAutoUpdate
             if ('select' === $data['type']) {
                 $from = empty($data['from']) ? $table : $data['from'];
                 $options = empty($data['options']) || !is_array($data['options']) ? [] : $data['options'];
-                $options['where'] = empty($options['where']) ? $data['where'] : $options['where'];
+                $options['where'] = $options['where'] ?? $data['where'] ?? '';
                 $options['enablefieldsoff'] = true;
                 $databaseUtility = $this->getRnbaseDatabaseUtility();
-                if (($rows = $databaseUtility->doSelect('uid', $from, $options))) {
+                if ($rows = $databaseUtility->doSelect('uid', $from, $options)) {
                     $rows = call_user_func_array('array_merge_recursive', $rows);
                 }
                 if (empty($rows['uid'])) {
@@ -325,8 +325,4 @@ class tx_mksearch_hooks_IndexerAutoUpdate
     {
         return tx_mksearch_util_ServiceRegistry::getIntIndexService();
     }
-}
-
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/hooks/class.tx_mksearch_hooks_IndexerAutoUpdate.php']) {
-    include_once $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/hooks/class.tx_mksearch_hooks_IndexerAutoUpdate.php'];
 }

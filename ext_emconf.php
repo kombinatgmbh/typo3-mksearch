@@ -17,7 +17,7 @@ $EM_CONF['mksearch'] = [
     'author_email' => 'dev@dmk-ebusiness.de',
     'shy' => '',
     'dependencies' => 'rn_base',
-    'version' => '10.1.7',
+    'version' => '11.0.5',
     'conflicts' => '',
     'priority' => '',
     'module' => '',
@@ -32,11 +32,11 @@ $EM_CONF['mksearch'] = [
     'constraints' => [
         'depends' => [
             'rn_base' => '1.15.0-',
-            'typo3' => '9.5.24-10.4.99',
+            'typo3' => '10.4.25-11.5.99',
         ],
         'conflicts' => [],
         'suggests' => [
-            'mksanitizedparameters' => '3.0.0-',
+            'mksanitizedparameters' => '11.0.0-',
         ],
     ],
     'suggests' => [],
@@ -55,7 +55,6 @@ $EM_CONF['mksearch'] = [
             'scheduler/',
             'search/',
             'service/',
-            'signalSlotDispatcher/',
             'tests/',
             'util/',
             'view/',

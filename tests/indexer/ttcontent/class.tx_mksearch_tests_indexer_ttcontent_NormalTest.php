@@ -22,8 +22,6 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch', 'lib/Apache/Solr/Document.php');
-
 /**
  * @author Hannes Bochmann <hannes.bochmann@dmk-ebusiness.de>
  * @license http://www.gnu.org/licenses/lgpl.html
@@ -91,7 +89,7 @@ class tx_mksearch_tests_indexer_ttcontent_NormalTest extends tx_mksearch_tests_T
             ->method('getModelToIndex')
             ->will(
                 $this->returnValue(
-                    $this->getModel($model)
+                    $this->getModel($record)
                 )
             );
 
@@ -124,7 +122,7 @@ class tx_mksearch_tests_indexer_ttcontent_NormalTest extends tx_mksearch_tests_T
             ->method('getModelToIndex')
             ->will(
                 $this->returnValue(
-                    $this->getModel($model)
+                    $this->getModel($record)
                 )
             );
 
@@ -295,6 +293,7 @@ class tx_mksearch_tests_indexer_ttcontent_NormalTest extends tx_mksearch_tests_T
 
     /**
      * @group unit
+     *
      * @dataProvider getTestDataForShouldRespectIncludeInSearchDisable
      */
     public function testShouldRespectIncludeInSearchDisable($options, $expected)
@@ -450,6 +449,7 @@ class tx_mksearch_tests_indexer_ttcontent_NormalTest extends tx_mksearch_tests_T
 
     /**
      * @group unit
+     *
      * @dataProvider getTestDataForIsIndexableRecordWithAllMethodPossibilities
      */
     public function testIsIndexableRecordWithAllMethodPossibilities($sourceRecord, $expected)
@@ -672,6 +672,7 @@ class tx_mksearch_tests_indexer_ttcontent_NormalTest extends tx_mksearch_tests_T
 
     /**
      * @group unit
+     *
      * @dataProvider getTestDataForIsIndexableRecordWithIndexableAndWithoutMethods
      */
     public function testIsIndexableRecordWithIndexableAndWithoutMethods($sourceRecord, $options, $expected)
@@ -838,6 +839,7 @@ class tx_mksearch_tests_indexer_ttcontent_NormalTest extends tx_mksearch_tests_T
 
     /**
      * @group unit
+     *
      * @dataProvider dataProviderDokTypes
      */
     public function testHasDocToBeDeletedDependentOnDokType($dokType, $hasToBeDeleted = true, $options = [])

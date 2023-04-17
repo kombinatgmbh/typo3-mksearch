@@ -31,10 +31,7 @@
  */
 class tx_mksearch_tests_indexer_ttcontent_GridelementsTest extends tx_mksearch_tests_Testcase
 {
-    /**
-     * setUp() = init DB etc.
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
         if (!\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('gridelements')) {
             $this->markTestSkipped('Gridelements not installed.');
@@ -47,6 +44,7 @@ class tx_mksearch_tests_indexer_ttcontent_GridelementsTest extends tx_mksearch_t
      * Test the isGridelement method.
      *
      * @group unit
+     *
      * @test
      */
     public function testIsGridelement()
@@ -73,6 +71,7 @@ class tx_mksearch_tests_indexer_ttcontent_GridelementsTest extends tx_mksearch_t
      * Test the hasDocToBeDeleted method.
      *
      * @group unit
+     *
      * @test
      */
     public function testHasDocToBeDeletedForNonGridElement()
@@ -101,6 +100,7 @@ class tx_mksearch_tests_indexer_ttcontent_GridelementsTest extends tx_mksearch_t
      * Test the hasDocToBeDeleted method.
      *
      * @group unit
+     *
      * @test
      */
     public function testHasDocToBeDeletedForGridElementAndForcedIndexing()
@@ -135,6 +135,7 @@ class tx_mksearch_tests_indexer_ttcontent_GridelementsTest extends tx_mksearch_t
      * Test the hasDocToBeDeleted method.
      *
      * @group unit
+     *
      * @test
      */
     public function testHasDocToBeDeletedForGridElementAndForcedNoIndexing()
@@ -169,6 +170,7 @@ class tx_mksearch_tests_indexer_ttcontent_GridelementsTest extends tx_mksearch_t
      * Test the hasDocToBeDeleted method.
      *
      * @group unit
+     *
      * @test
      */
     public function testHasDocToBeDeletedForGridElementAndContainer()
@@ -203,6 +205,7 @@ class tx_mksearch_tests_indexer_ttcontent_GridelementsTest extends tx_mksearch_t
      * Test the hasDocToBeDeleted method.
      *
      * @group unit
+     *
      * @test
      */
     public function testHasDocToBeDeletedForGridElementAndNoContainer()
@@ -237,6 +240,7 @@ class tx_mksearch_tests_indexer_ttcontent_GridelementsTest extends tx_mksearch_t
      * Test the getContentByContentType method.
      *
      * @group unit
+     *
      * @test
      */
     public function testGetContentByContentTypeForGridelement()
@@ -259,6 +263,7 @@ class tx_mksearch_tests_indexer_ttcontent_GridelementsTest extends tx_mksearch_t
      * Test the getContentByContentType method.
      *
      * @group unit
+     *
      * @test
      */
     public function testGetContentByContentTypeForNonGridelement()
@@ -281,6 +286,7 @@ class tx_mksearch_tests_indexer_ttcontent_GridelementsTest extends tx_mksearch_t
      * Test the getAllowedCTypes method.
      *
      * @group unit
+     *
      * @test
      */
     public function testGetAllowedCTypes()

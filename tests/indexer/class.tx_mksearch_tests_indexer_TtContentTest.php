@@ -22,8 +22,6 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch', 'lib/Apache/Solr/Document.php');
-
 /**
  * @author Hannes Bochmann <hannes.bochmann@dmk-ebusiness.de>
  * @author Michael Wagner <michael.wagner@dmk-ebusiness.de>
@@ -32,12 +30,7 @@ require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksear
  */
 class tx_mksearch_tests_indexer_TtContentTest extends tx_mksearch_tests_Testcase
 {
-    /**
-     * {@inheritdoc}
-     *
-     * @see tx_mksearch_tests_Testcase::setUp()
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
         self::markTestIncomplete('Error: Call to a member function isConnected() on null');
         // @TODO: ther are db operations. where? fix it!
@@ -60,7 +53,9 @@ class tx_mksearch_tests_indexer_TtContentTest extends tx_mksearch_tests_Testcase
      * @param string $expectedTitle
      *
      * @group unit
+     *
      * @test
+     *
      * @dataProvider getGetTitleData
      */
     public function testGetTitle(
@@ -167,7 +162,7 @@ class tx_mksearch_tests_indexer_TtContentTest extends tx_mksearch_tests_Testcase
     {
         $indexer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_mksearch_indexer_TtContent');
         list($extKey, $cType) = $indexer->getContentType();
-        //content type correct?
+        // content type correct?
         self::assertEquals('core', $extKey, 'wrong ext key');
         self::assertEquals('tt_content', $cType, 'wrong cType');
 

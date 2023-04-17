@@ -73,7 +73,7 @@ class tx_mksearch_scheduler_IndexTaskAddFieldProvider implements \TYPO3\CMS\Sche
         $additionalFields = [];
         $additionalFields[$fieldID] = [
             'code' => $fieldCode,
-            'label' => 'LLL:EXT:mksearch/locallang_db.xml:scheduler_indexTask_field_'.FIELD_ITEMS,
+            'label' => 'LLL:EXT:mksearch/Resources/Private/Language/locallang_db.xlf:scheduler_indexTask_field_'.FIELD_ITEMS,
             'cshKey' => '_MOD_web_txschedulerM1',
         ];
 
@@ -105,8 +105,4 @@ class tx_mksearch_scheduler_IndexTaskAddFieldProvider implements \TYPO3\CMS\Sche
     {
         $task->setAmountOfItems($submittedData[FIELD_ITEMS]);
     }
-}
-
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/scheduler/class.tx_mksearch_scheduler_IndexTaskAddFieldProvider.php']) {
-    include_once $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/scheduler/class.tx_mksearch_scheduler_IndexTaskAddFieldProvider.php'];
 }

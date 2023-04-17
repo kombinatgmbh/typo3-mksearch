@@ -22,8 +22,6 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch', 'lib/Apache/Solr/Document.php');
-
 /**
  * @author Hannes Bochmann <hannes.bochmann@dmk-ebusiness.de>
  * @author Michael Wagner <michael.wagner@dmk-ebusiness.de>
@@ -32,7 +30,7 @@ require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksear
  */
 class tx_mksearch_tests_indexer_TtNewsNewsTest extends tx_mksearch_tests_Testcase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         if (!\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('tt_news')) {
             $this->markTestSkipped('tt_news is not installed!');
@@ -59,12 +57,12 @@ class tx_mksearch_tests_indexer_TtNewsNewsTest extends tx_mksearch_tests_Testcas
         $indexer->prepareSearchData('tt_news', $record, $indexDoc, $options);
         $data = $indexDoc->getData();
         self::assertEquals('2010-01-30T15:00:00Z', $data['datetime_dt']->getValue());
-        //indexing of extra fields worked?
+        // indexing of extra fields worked?
         self::assertEquals('some test', $data['bodytext_s']->getValue());
         self::assertEquals(123, $data['uid_i']->getValue());
-        //merging into content worked?
+        // merging into content worked?
         self::assertEquals('123 some test', $data['content']->getValue());
-        //indexing of standard fields worked?
+        // indexing of standard fields worked?
         self::assertEquals('some test', $data['news_text_s']->getValue(), 'news_text_s falsch');
         self::assertEquals('some test', $data['news_text_t']->getValue(), 'news_text_t falsch');
     }
@@ -88,12 +86,12 @@ class tx_mksearch_tests_indexer_TtNewsNewsTest extends tx_mksearch_tests_Testcas
         $indexer->prepareSearchData('tt_news', $record, $indexDoc, $options);
         $data = $indexDoc->getData();
         self::assertEquals('2010-01-30T15:00:00Z', $data['datetime_dt']->getValue(), 'datetime falsch');
-        //indexing of extra fields worked?
+        // indexing of extra fields worked?
         self::assertEquals('some test  with html markup', $data['bodytext_s']->getValue(), 'bodytext falsch');
         self::assertEquals(123, $data['uid_i']->getValue());
-        //merging into content worked?
+        // merging into content worked?
         self::assertEquals('123 some test  with html markup', $data['content']->getValue(), 'content falsch');
-        //indexing of standard fields worked?
+        // indexing of standard fields worked?
         self::assertEquals('some test  with html markup', $data['news_text_s']->getValue(), 'news_text_s falsch');
         self::assertEquals('some test  with html markup', $data['news_text_t']->getValue(), 'news_text_t falsch');
     }
@@ -119,12 +117,12 @@ class tx_mksearch_tests_indexer_TtNewsNewsTest extends tx_mksearch_tests_Testcas
         $indexer->prepareSearchData('tt_news', $record, $indexDoc, $options);
         $data = $indexDoc->getData();
         self::assertEquals('2010-01-30T15:00:00Z', $data['datetime_dt']->getValue(), 'datetime falsch');
-        //indexing of extra fields worked?
+        // indexing of extra fields worked?
         self::assertEquals('some test <p>with html markup</p>', $data['bodytext_s']->getValue(), 'bodytext falsch');
         self::assertEquals(123, $data['uid_i']->getValue());
-        //merging into content worked?
+        // merging into content worked?
         self::assertEquals('123 some test <p>with html markup</p> ', $data['content']->getValue(), 'content falsch');
-        //indexing of standard fields worked?
+        // indexing of standard fields worked?
         self::assertEquals('some test <p>with html markup</p>', $data['news_text_s']->getValue(), 'news_text_s falsch');
         self::assertEquals('some test <p>with html markup</p>', $data['news_text_t']->getValue(), 'news_text_t falsch');
     }
@@ -152,9 +150,9 @@ class tx_mksearch_tests_indexer_TtNewsNewsTest extends tx_mksearch_tests_Testcas
         $indexer->prepareSearchData('tt_news', $record, $indexDoc, $options);
         self::assertEquals(false, $indexDoc->getDeleted());
         $data = $indexDoc->getData();
-        //merging into content worked?
+        // merging into content worked?
         self::assertEquals('123 some test', $data['content']->getValue());
-        //no extra fields added?
+        // no extra fields added?
         self::assertFalse(array_key_exists('uid_i', $data), 'uid_i Field is existent!');
         self::assertFalse(array_key_exists('uid', $data), 'uid Field is existent!');
         self::assertFalse(array_key_exists('bodytext_s', $data), 'bodytext_s Field is existent!');
@@ -176,10 +174,10 @@ class tx_mksearch_tests_indexer_TtNewsNewsTest extends tx_mksearch_tests_Testcas
         $indexer->prepareSearchData('tt_news', $record, $indexDoc, $options);
         $data = $indexDoc->getData();
         self::assertEquals('2010-01-30T15:00:00Z', $data['datetime_dt']->getValue(), 'datetime falsch');
-        //indexing of standard fields worked?
+        // indexing of standard fields worked?
         self::assertEquals('some test  with html markup', $data['news_text_s']->getValue(), 'news_text_s falsch');
         self::assertEquals('some test  with html markup', $data['news_text_t']->getValue(), 'news_text_t falsch');
-        //merging into content ignored as nothing?
+        // merging into content ignored as nothing?
         self::assertTrue(empty($data['content']), 'content falsch');
     }
 
@@ -271,8 +269,4 @@ class tx_mksearch_tests_indexer_TtNewsNewsTest extends tx_mksearch_tests_Testcas
         $indexerReturn = $indexer->prepareSearchData('tt_news_cat', $record, $indexDoc, $options);
         self::assertNull($indexerReturn);
     }
-}
-
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/tests/indexer/class.tx_mksearch_tests_indexer_TtNewsNewsTest.php']) {
-    include_once $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/tests/indexer/class.tx_mksearch_tests_indexer_TtNewsNewsTest.php'];
 }

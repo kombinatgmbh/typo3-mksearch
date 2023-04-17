@@ -22,8 +22,6 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch').'lib/Apache/Solr/Service.php';
-
 /**
  * Service "Solr search engine" for the "mksearch" extension.
  */
@@ -77,20 +75,19 @@ class tx_mksearch_service_engine_Solr extends \Sys25\RnBase\Typo3Wrapper\Service
         // multivalue fields should always be an array
         $this->index->setCollapseSingleValueArrays(false);
 
-        //per default werden alle HTTP Aufrufe per file_get_contents erledigt.
-        //siehe Apache_Solr_Service::getHttpTransport()
-        //damit das funktioniert muss allerdings allow_url_fopen in den PHP
-        //Einstellungen aktiv sein. Das öffnet nun aber eine große
-        //Sicherheitslücke. Alternativ bieten wir daher an alle Http Aufrufe
-        //per Curl durchzuführen.
+        // per default werden alle HTTP Aufrufe per file_get_contents erledigt.
+        // siehe Apache_Solr_Service::getHttpTransport()
+        // damit das funktioniert muss allerdings allow_url_fopen in den PHP
+        // Einstellungen aktiv sein. Das öffnet nun aber eine große
+        // Sicherheitslücke. Alternativ bieten wir daher an alle Http Aufrufe
+        // per Curl durchzuführen.
         if (\Sys25\RnBase\Configuration\Processor::getExtensionCfgValue('mksearch', 'useCurlAsHttpTransport')) {
-            require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch').'lib/Apache/Solr/HttpTransport/Curl.php';
             $oHttpTransport = new Apache_Solr_HttpTransport_Curl();
             $this->index->setHttpTransport($oHttpTransport);
         }
 
-        //die Methode Ping gibt bei einem 200er die Millisek. zurück,
-        //die die Anfrage gedauert hat, dies kann auch 0 sein!
+        // die Methode Ping gibt bei einem 200er die Millisek. zurück,
+        // die die Anfrage gedauert hat, dies kann auch 0 sein!
         if (false === $this->index->ping() && $force) {
             \Sys25\RnBase\Utility\Logger::fatal('Solr service not responding.', 'mksearch', [$host, $port, $path]);
             throw new tx_mksearch_service_engine_SolrException('Solr service not responding.', -1, 'http://'.$host.':'.$port.$path);
@@ -235,7 +232,12 @@ class tx_mksearch_service_engine_Solr extends \Sys25\RnBase\Typo3Wrapper\Service
         $ret = [];
         $solr = $this->getSolr();
         try {
-            $response = $solr->search($fields['term'], intval($options['offset']), intval($options['limit']), $options);
+            $response = $solr->search(
+                $fields['term'] ?? '',
+                intval($options['offset'] ?? 0),
+                intval($options['limit'] ?? 0),
+                $options
+            );
             if (200 != $response->getHttpStatus()) {
                 throw new tx_mksearch_service_engine_SolrException('Error requesting solr. HTTP status:'.$response->getHttpStatus(), -1, $solr->lastUrl);
             }
@@ -248,15 +250,15 @@ class tx_mksearch_service_engine_Solr extends \Sys25\RnBase\Typo3Wrapper\Service
             $ret['searchUrl'] = $solr->lastUrl;
             $ret['searchTime'] = (microtime(true) - $start).' ms';
 
-            if ('true' == $options['group.ngroups']) {
-                $ret['numFound'] = $response->grouped->{$options['group.field']}->ngroups;
+            if ('true' == ($options['group.ngroups'] ?? '')) {
+                $ret['numFound'] = $response->grouped->{$options['group.field']}->ngroups ?? 0;
             } else {
                 $ret['numFound'] = $response->response->numFound;
             }
 
             $ret['response'] = &$response; // wichtig, wird im SolrResponseProcessor benötigt
 
-            if ($options['debug']) {
+            if ($options['debug'] ?? false) {
                 if (is_object($response->debug)) {
                     $ret['debug'] = get_object_vars($response->debug);
                 }
@@ -429,9 +431,9 @@ class tx_mksearch_service_engine_Solr extends \Sys25\RnBase\Typo3Wrapper\Service
 
         return $this->search(
             ['term' => $searchTerm],
-            //we set the defType to "lucene" in case the default request handler
-            //is dismax or something else. please note that the default request handler
-            //shouldn't set a fq or something else!
+            // we set the defType to "lucene" in case the default request handler
+            // is dismax or something else. please note that the default request handler
+            // shouldn't set a fq or something else!
             ['defType' => 'lucene', 'rawFormat' => 1, 'rawOutput' => 1, 'limit' => 100]
         );
     }
@@ -688,7 +690,7 @@ class tx_mksearch_service_engine_Solr extends \Sys25\RnBase\Typo3Wrapper\Service
             }
             $ret['response'] = &$response; // wichtig, wird im SolrResponseProcessor benötigt
 
-            if ($options['debug']) {
+            if ($options['debug'] ?? false) {
                 $ret['debug'] = get_object_vars($response->debug);
                 \Sys25\RnBase\Utility\Debug::debug([$options, $ret], 'class.tx_mksearch_service_engine_Solr.php Line: '.__LINE__); // TODO: remove me
             }
@@ -767,8 +769,8 @@ class tx_mksearch_service_engine_Solr extends \Sys25\RnBase\Typo3Wrapper\Service
     public function postProcessIndexing(tx_mksearch_model_internal_Index $oIndex)
     {
         $aConfig = $oIndex->getIndexConfig();
-        //shall the autocomplete/spellcheck be updated?
-        if ($aConfig['solr.']['builtSpellcheck']) {
+        // shall the autocomplete/spellcheck be updated?
+        if ($aConfig['solr.']['builtSpellcheck'] ?? false) {
             $this->builtSpellcheckIndex($aConfig['solr.']['builtSpellcheck']);
         }
     }
@@ -784,16 +786,16 @@ class tx_mksearch_service_engine_Solr extends \Sys25\RnBase\Typo3Wrapper\Service
     protected function builtSpellcheckIndex($sRequestHandler)
     {
         $oSolr = $this->getSolr();
-        //remove trailing slash of the path
+        // remove trailing slash of the path
         if ('/' == substr($oSolr->getPath(), -1)) {
             $sPath = substr($oSolr->getPath(), 0, -1);
         }
-        //now add the configured request handler executing the update
+        // now add the configured request handler executing the update
         $sUrl = $oSolr->getHost().':'.$oSolr->getPort().$sPath.$sRequestHandler;
-        //now add the command for the built
+        // now add the command for the built
         $sUrl .= '?spellcheck.build=true';
 
-        //and execute the command
+        // and execute the command
         $oSolr->getHttpTransport()->performHeadRequest($sUrl, [], 'application/xml; charset=UTF-8');
     }
 
@@ -818,8 +820,9 @@ class tx_mksearch_service_engine_Solr extends \Sys25\RnBase\Typo3Wrapper\Service
      */
     public static function getHitsFromSolrResponse(Apache_Solr_Response $response, array $options)
     {
-        if ('true' == $options['group']) {
-            foreach ((array) $response->grouped->{$options['group.field']}->groups as $group) {
+        $docs = [];
+        if ('true' == ($options['group'] ?? '')) {
+            foreach ((array) ($response->grouped->{$options['group.field']}->groups ?? []) as $group) {
                 foreach ($group->doclist->docs as $doc) {
                     $solrDocument = new Apache_Solr_Document();
                     foreach ($doc as $field => $value) {
@@ -841,8 +844,4 @@ class tx_mksearch_service_engine_Solr extends \Sys25\RnBase\Typo3Wrapper\Service
 
         return $hits;
     }
-}
-
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/service/engine/class.tx_mksearch_service_engine_Solr.php']) {
-    include_once $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/service/engine/class.tx_mksearch_service_engine_Solr.php'];
 }

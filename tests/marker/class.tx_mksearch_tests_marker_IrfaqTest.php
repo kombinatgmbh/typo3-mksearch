@@ -25,11 +25,6 @@
  */
 
 /**
- * benötigte Klassen einbinden.
- */
-require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch').'lib/Apache/Solr/Document.php';
-
-/**
  * @author Hannes Bochmann <hannes.bochmann@dmk-ebusiness.de>
  * @author Michael Wagner <michael.wagner@dmk-ebusiness.de>
  * @license http://www.gnu.org/licenses/lgpl.html
@@ -42,10 +37,7 @@ class tx_mksearch_tests_marker_IrfaqTest extends tx_mksearch_tests_Testcase
      */
     protected $marker;
 
-    /**
-     * setUp() = init DB etc.
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
         self::markTestIncomplete("Error: Class 'TYPO3\CMS\Core\TimeTracker\NullTimeTracker' not found");
         $this->prepareTSFE();
@@ -64,7 +56,7 @@ class tx_mksearch_tests_marker_IrfaqTest extends tx_mksearch_tests_Testcase
         $configurations = tx_mksearch_tests_Util::loadConfig4BE($config);
         $formatter = $configurations->getFormatter();
 
-        //now test
+        // now test
         $doc = new Apache_Solr_Document();
         $doc->category_first_shortcut_s = '';
 
@@ -91,7 +83,7 @@ class tx_mksearch_tests_marker_IrfaqTest extends tx_mksearch_tests_Testcase
         $configurations = tx_mksearch_tests_Util::loadConfig4BE($config);
         $formatter = $configurations->getFormatter();
 
-        //now test
+        // now test
         $doc = new Apache_Solr_Document();
         $doc->category_first_shortcut_s = 'filled';
 

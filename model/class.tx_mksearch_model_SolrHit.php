@@ -22,8 +22,6 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mksearch', 'lib/Apache/Solr/Document.php');
-
 /**
  * Model for search hits from solt.
  *
@@ -45,7 +43,7 @@ class tx_mksearch_model_SolrHit extends \Sys25\RnBase\Domain\Model\BaseModel imp
     {
         $solrDoc = $rowOrUid;
         if (!$solrDoc instanceof Apache_Solr_Document) {
-            throw new InvalidArgumentException('The solr doc has to be an object instance of "Apache_Solr_Document",'.'"'.(is_object($solrDoc) ? get_class($solrDoc) : gettype($solrDoc)).'" given.', 1370252783);
+            throw new InvalidArgumentException('The solr doc has to be an object instance of "Apache_Solr_Document","'.(is_object($solrDoc) ? get_class($solrDoc) : gettype($solrDoc)).'" given.', 1370252783);
         }
         $this->solrDoc = $solrDoc;
         $uidField = $solrDoc->getField('uid');
@@ -99,8 +97,4 @@ class tx_mksearch_model_SolrHit extends \Sys25\RnBase\Domain\Model\BaseModel imp
     {
         return 0;
     }
-}
-
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/model/class.tx_mksearch_model_SolrHit.php']) {
-    include_once $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/model/class.tx_mksearch_model_SolrHit.php'];
 }

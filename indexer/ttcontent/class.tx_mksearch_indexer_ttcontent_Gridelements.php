@@ -48,14 +48,14 @@ class tx_mksearch_indexer_ttcontent_Gridelements extends tx_mksearch_indexer_ttc
     ) {
         // @codingStandardsIgnoreEnd
         // should the element be removed from the index?
-        if ((
+        if (
             // only for gridelements? no, other elements should be deleted too!
             // $this->isGridelement($oModel->getRecord()) &&
             // only if not directly set do indexable or not indexable!
             self::USE_INDEXER_CONFIGURATION == $oModel->getTxMksearchIsIndexable() &&
             // only, if there are a parent container
             $oModel->getTxGridelementsContainer() > 0
-        )) {
+        ) {
             // add the parent do index, so the changes are writen to index
             $this->addGridelementsContainerToIndex($oModel);
 
@@ -147,7 +147,7 @@ class tx_mksearch_indexer_ttcontent_Gridelements extends tx_mksearch_indexer_ttc
         array $record,
         array $options
     ) {
-        tx_mksearch_util_Indexer::prepareTSFE($record['pid'], $options['lang']);
+        tx_mksearch_util_Indexer::prepareTSFE($record['pid'], $options['lang'] ?? 0);
         $uid = $this->getUid('tt_content', $record, []);
 
         $allowedCTypes = $this->getAllowedCTypes($options);
@@ -194,8 +194,4 @@ class tx_mksearch_indexer_ttcontent_Gridelements extends tx_mksearch_indexer_ttc
 
         return $allowedCTypes;
     }
-}
-
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/indexer/ttcontent/class.tx_mksearch_indexer_ttcontent_Gridelements.php']) {
-    include_once $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/indexer/ttcontent/class.tx_mksearch_indexer_ttcontent_Gridelements.php'];
 }

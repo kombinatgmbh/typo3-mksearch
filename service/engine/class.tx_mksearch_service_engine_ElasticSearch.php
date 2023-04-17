@@ -144,7 +144,7 @@ class tx_mksearch_service_engine_ElasticSearch extends \Sys25\RnBase\Typo3Wrappe
      */
     protected function getLogger()
     {
-        return \Sys25\RnBase\Utility\Logger;
+        return \Sys25\RnBase\Utility\Logger::class;
     }
 
     /**
@@ -186,7 +186,7 @@ class tx_mksearch_service_engine_ElasticSearch extends \Sys25\RnBase\Typo3Wrappe
             $result['error'] = $searchResult->getResponse()->getError();
             $result['items'] = $items;
 
-            if ($options['debug']) {
+            if ($options['debug'] ?? false) {
                 \Sys25\RnBase\Utility\Debug::debug(
                     ['options' => $options, 'result' => $result],
                     __METHOD__.' Line: '.__LINE__
@@ -372,7 +372,7 @@ class tx_mksearch_service_engine_ElasticSearch extends \Sys25\RnBase\Typo3Wrappe
      */
     private function handleSorting(Query $elasticaQuery, array $options)
     {
-        if ($options['sort']) {
+        if ($options['sort'] ?? '') {
             list($field, $order) = \Sys25\RnBase\Utility\Strings::trimExplode(' ', $options['sort'],
                 true);
             $elasticaQuery->addSort(
@@ -647,7 +647,7 @@ class tx_mksearch_service_engine_ElasticSearch extends \Sys25\RnBase\Typo3Wrappe
      */
     public function replaceIndex($which, $by)
     {
-        //vorerst nichts zu tun
+        // vorerst nichts zu tun
     }
 
     /**
@@ -815,8 +815,4 @@ class tx_mksearch_service_engine_ElasticSearch extends \Sys25\RnBase\Typo3Wrappe
 
         return $typoScriptService->convertTypoScriptArrayToPlainArray($extbaseFrameworkConfiguration['plugin.']['tx_mksearch.']['elasticsearch.']);
     }
-}
-
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/service/engine/class.tx_mksearch_service_engine_ElasticSearch.php']) {
-    include_once $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/service/engine/class.tx_mksearch_service_engine_ElasticSearch.php'];
 }

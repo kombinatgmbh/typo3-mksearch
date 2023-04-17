@@ -116,7 +116,7 @@ class tx_mksearch_mod1_decorator_Composite
         $out = '';
         $out .= $formtool->createEditLink($item->getTableName(), $item->getUid(), '');
         $out .= $item->getTitle();
-        if ($options['includeIndex']) {
+        if ($options['includeIndex'] ?? false) {
             $indizes = tx_mksearch_util_ServiceRegistry::getIntIndexService()->getByComposite($item);
             /* @var $compositeDecorator tx_mksearch_mod1_decorator_Index */
             $indizesDecorator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_mksearch_mod1_decorator_Index', $this->getModule());
@@ -125,7 +125,7 @@ class tx_mksearch_mod1_decorator_Composite
             $out .= $indizesDecorator->getIndexInfos($indizes);
             $out .= '</div>';
         }
-        if ($options['includeConfig']) {
+        if ($options['includeConfig'] ?? false) {
             $configs = tx_mksearch_util_ServiceRegistry::getIntConfigService()->getByComposite($item);
             /* @var $compositeDecorator tx_mksearch_mod1_decorator_IndexerConfig */
             $configDecorator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_mksearch_mod1_decorator_IndexerConfig', $this->getModule());
@@ -138,8 +138,4 @@ class tx_mksearch_mod1_decorator_Composite
         // $out .= '<br />'; // @TODO: in indices und configs wahlweise mit ausgeben
         return '<div>'.$out.'</div>';
     }
-}
-
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/mod1/decorator/class.tx_mksearch_mod1_decorator_Composite.php']) {
-    include_once $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/mod1/decorator/class.tx_mksearch_mod1_decorator_Composite.php'];
 }

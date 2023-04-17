@@ -48,7 +48,7 @@ class tx_mksearch_mod1_util_Selector
             $options['buttonName'] ? $options['buttonName'] : $key,
             $options['buttonValue'] ? $options['buttonValue'] : $GLOBALS['LANG']->getLL('label_button_search')
         );
-        $out['label'] = $options['label'] ? $options['label'] : $GLOBALS['LANG']->getLL('label_search');
+        $out['label'] = $options['label'] ?? $GLOBALS['LANG']->getLL('label_search');
 
         return $searchstring;
     }
@@ -68,7 +68,7 @@ class tx_mksearch_mod1_util_Selector
             1 => $GLOBALS['LANG']->getLL('label_select_show_hidden'),
         ];
 
-        $options['label'] = $options['label'] ? $options['label'] : $GLOBALS['LANG']->getLL('label_hidden');
+        $options['label'] = $options['label'] ?? $GLOBALS['LANG']->getLL('label_hidden');
 
         return $this->showSelectorByArray($items, 'showhidden', $data, $options);
     }
@@ -173,11 +173,11 @@ class tx_mksearch_mod1_util_Selector
             $aItems
         );
 
-        //label
+        // label
         $aData['label'] = $aOptions['label'];
 
         // as the deleted fe users have always to be hidden the function returns always false
-        //@todo wozu die alte abfrage? return $defId==$id ? false : $selectedItem;
+        // @todo wozu die alte abfrage? return $defId==$id ? false : $selectedItem;
         return $selectedItem;
     }
 
@@ -277,8 +277,4 @@ class tx_mksearch_mod1_util_Selector
 
         return $out;
     }
-}
-
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/mod1/util/class.tx_mksearch_mod1_util_Selector.php']) {
-    include_once $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/mod1/util/class.tx_mksearch_mod1_util_Selector.php'];
 }

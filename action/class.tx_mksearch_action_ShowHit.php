@@ -21,10 +21,10 @@ class tx_mksearch_action_ShowHit extends \Sys25\RnBase\Frontend\Controller\Abstr
     }
 
     /**
+     * @return tx_mksearch_interface_SearchHit
+     *
      * @throws InvalidArgumentException
      * @throws Ambigous                 <Exception, LogicException, LogicException, tx_mksearch_service_engine_SolrException>
-     *
-     * @return tx_mksearch_interface_SearchHit
      */
     protected function findItem()
     {
@@ -70,7 +70,7 @@ class tx_mksearch_action_ShowHit extends \Sys25\RnBase\Frontend\Controller\Abstr
             throw new LogicException('No hit found for "'.$extKey.':'.$contentType.':'.$uid.'" in index "'.$this->getIndex()->getUid().'".', 1377774172);
         }
         if (!$item instanceof tx_mksearch_interface_SearchHit) {
-            throw new LogicException('The hit has to be an object instance of "tx_mksearch_interface_SearchHit",'.'"'.(is_object($item) ? get_class($item) : gettype($item)).'" given.', 1377774178);
+            throw new LogicException('The hit has to be an object instance of "tx_mksearch_interface_SearchHit","'.(is_object($item) ? get_class($item) : gettype($item)).'" given.', 1377774178);
         }
 
         return $item;
@@ -81,9 +81,9 @@ class tx_mksearch_action_ShowHit extends \Sys25\RnBase\Frontend\Controller\Abstr
      * @param string $extKey
      * @param string $contentType
      *
-     * @throws Ambigous <Exception, InvalidArgumentException, tx_mksearch_service_engine_SolrException>
-     *
      * @return
+     *
+     * @throws Ambigous <Exception, InvalidArgumentException, tx_mksearch_service_engine_SolrException>
      */
     protected function searchByContentUid($uid, $extKey, $contentType)
     {
@@ -102,8 +102,8 @@ class tx_mksearch_action_ShowHit extends \Sys25\RnBase\Frontend\Controller\Abstr
             $searchEngine->closeIndex();
         } catch (Exception $e) {
             $lastUrl = $e instanceof tx_mksearch_service_engine_SolrException ? $e->getLastUrl() : '';
-            //Da die Exception gefangen wird, würden die Entwickler keine Mail bekommen
-            //also machen wir das manuell
+            // Da die Exception gefangen wird, würden die Entwickler keine Mail bekommen
+            // also machen wir das manuell
             if ($addr = \Sys25\RnBase\Configuration\Processor::getExtensionCfgValue('rn_base', 'sendEmailOnException')) {
                 \Sys25\RnBase\Utility\Misc::sendErrorMail($addr, 'tx_mksearch_action_SearchSolr_searchSolr', $e);
             }
@@ -127,15 +127,15 @@ class tx_mksearch_action_ShowHit extends \Sys25\RnBase\Frontend\Controller\Abstr
     /**
      * returns the dataset for the current used index.
      *
-     * @throws Exception
-     *
      * @return tx_mksearch_model_internal_Index
+     *
+     * @throws Exception
      */
     protected function getIndex()
     {
         if (false === $this->index) {
             $indexUid = $this->getConfigurations()->get($this->getConfId().'usedIndex');
-            //let's see if we got a index to use via parameters
+            // let's see if we got a index to use via parameters
             if (empty($indexUid)) {
                 $indexUid = $this->getConfigurations()->getParameters()->get('usedIndex');
             }
@@ -161,8 +161,4 @@ class tx_mksearch_action_ShowHit extends \Sys25\RnBase\Frontend\Controller\Abstr
     {
         return 'tx_mksearch_view_ShowHit';
     }
-}
-
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/action/class.tx_mksearch_action_ShowHit.php']) {
-    include_once $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/action/class.tx_mksearch_action_ShowHit.php'];
 }

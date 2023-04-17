@@ -36,21 +36,21 @@ class tx_mksearch_mod1_Module extends \Sys25\RnBase\Backend\Module\BaseModule
     public function init()
     {
         // fallback for TYPO3 4 and index.php calls
-        if (!$this->MCONF['name']) {
+        if (!($this->MCONF['name'] ?? '')) {
             $this->MCONF = array_merge(
                 (array) $GLOBALS['MCONF'],
                 [
                     'name' => 'web_MksearchM1',
                     'access' => 'user,group',
                     'default' => [
-                        'tabs_images' => ['tab' => 'moduleicon.gif'],
-                        'll_ref' => 'LLL:EXT:mksearch/mod1/locallang_mod.xml',
+                        'tabs_images' => ['tab' => 'Resources/Public/Icons/moduleicon.png'],
+                        'll_ref' => 'LLL:EXT:mksearch/Resources/Private/Language/BackendModule/locallang_mod.xlf',
                     ],
                 ]
             );
         }
 
-        $GLOBALS['LANG']->includeLLFile('EXT:mksearch/mod1/locallang.xml');
+        $GLOBALS['LANG']->includeLLFile('EXT:mksearch/Resources/Private/Language/BackendModule/locallang.xlf');
         $GLOBALS['BE_USER']->modAccess($this->MCONF, 1);
         parent::init();
     }
@@ -87,8 +87,4 @@ class tx_mksearch_mod1_Module extends \Sys25\RnBase\Backend\Module\BaseModule
 
         return parent::moduleContent();
     }
-}
-
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/mod1/class.tx_mksearch_mod1_Module.php']) {
-    include_once $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/mksearch/mod1/class.tx_mksearch_mod1_Module.php'];
 }
