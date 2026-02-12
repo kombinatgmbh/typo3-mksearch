@@ -292,9 +292,13 @@ class tx_mksearch_service_engine_ElasticSearch extends \Sys25\RnBase\Typo3Wrappe
                 case Search::OPTION_SCROLL_ID:
                 case Search::OPTION_SEARCH_TYPE_SUGGEST:
                     // explain und limit wird von Elastica selbst remapped
-                case 'explain':
                 case 'limit':
                     $elasticaOptions[$key] = $value;
+                    break;
+
+                case 'explain':
+                    $elasticaOptions[$key] = $value == 1;
+                    break;
             }
         }
 
