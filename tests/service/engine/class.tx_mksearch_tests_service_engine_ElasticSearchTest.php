@@ -896,7 +896,6 @@ class tx_mksearch_tests_service_engine_ElasticSearchTest extends tx_mksearch_tes
                 'uid' => 123,
             ]
         );
-        $elasticaDocument->setType('mksearch:tt_content');
         $response = $this->getMockBuilder('stdClass')
             ->addMethods(['isOk'])
             ->getMock();
@@ -928,7 +927,6 @@ class tx_mksearch_tests_service_engine_ElasticSearchTest extends tx_mksearch_tes
             ->getMock();
 
         $elasticaDocument = new Elastica\Document('123');
-        $elasticaDocument->setType('mksearch:tt_content');
         $response = $this->getMockBuilder('stdClass')
             ->addMethods(['isOk'])
             ->getMock();

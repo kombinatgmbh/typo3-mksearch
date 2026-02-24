@@ -424,7 +424,6 @@ class tx_mksearch_service_engine_ElasticSearch extends \Sys25\RnBase\Typo3Wrappe
                     $item->getData()
                 );
                 $item->getIndex() && $hit->setIndex($item->getIndex());
-                $item->getType() && $hit->setType($item->getType());
                 $item->getId() && $hit->setId($item->getId());
                 $item->getScore() && $hit->setScore($item->getScore());
                 $items[] = $hit;
@@ -682,10 +681,6 @@ class tx_mksearch_service_engine_ElasticSearch extends \Sys25\RnBase\Typo3Wrappe
 
         $primaryKey = $doc->getPrimaryKey();
         $elasticaDocument = new Document($primaryKey['uid']->getValue(), $data);
-        $elasticaDocument->setType(
-            $primaryKey['extKey']->getValue().':'.
-            $primaryKey['contentType']->getValue()
-        );
 
         return $this->getIndex()->addDocuments([$elasticaDocument])->isOk();
     }
@@ -715,9 +710,7 @@ class tx_mksearch_service_engine_ElasticSearch extends \Sys25\RnBase\Typo3Wrappe
      */
     public function indexDeleteByContentUid($uid, $extKey, $contentType)
     {
-        $type = $extKey.':'.$contentType;
         $elasticaDocument = new Document($uid);
-        $elasticaDocument->setType($type);
 
         return $this->getIndex()->deleteDocuments([$elasticaDocument])->isOk();
     }
