@@ -1,4 +1,5 @@
 <?php
+
 /***************************************************************
  * Copyright notice
  *
@@ -222,9 +223,9 @@ class tx_mksearch_indexer_TxNewsNews extends tx_mksearch_indexer_Base
                 $indexDoc->setDeleted(true);
 
                 return $indexDoc;
-            } else {
-                return null;
             }
+
+            return null;
         }
 
         $this->indexNews($rawData, $news, $indexDoc, $options);
@@ -293,12 +294,12 @@ class tx_mksearch_indexer_TxNewsNews extends tx_mksearch_indexer_Base
 
         $bodyText = '';
         foreach ([
-                $news->getBodytext(),
-                $news->getTeaser(),
-                $news->getTitle(),
-                $content,
-                $abstract,
-            ] as $html) {
+            $news->getBodytext(),
+            $news->getTeaser(),
+            $news->getTitle(),
+            $content,
+            $abstract,
+        ] as $html) {
             if (empty($html)) {
                 continue;
             }

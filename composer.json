@@ -41,7 +41,7 @@
     "require": {
         "php": "^7.4 || ^8.0",
         "typo3/cms-core": "^10.4.25 || ^11.5.7",
-        "digedag/rn-base": "^1.16.7"
+        "digedag/rn-base": "~1.16.7"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.3",
@@ -79,6 +79,11 @@
         "dmk/mksanitizedparameters": "keeps your parameters clean and safe"
     },
     "config": {
+        "policy": {
+            "advisories": {
+                "block": false
+            }
+        },
         "vendor-dir": ".Build/vendor",
         "bin-dir": ".Build/bin",
         "preferred-install": {
@@ -109,7 +114,10 @@
         ],
         "test:phpcompatibility": [
             "@test:phpcompatibility:7.4",
-            "@test:phpcompatibility:8.0"
+            "@test:phpcompatibility:8.0",
+            "@test:phpcompatibility:8.1",
+            "@test:phpcompatibility:8.2",
+            "@test:phpcompatibility:8.3"
         ],
         "test:phpcompatibility:7.4": [
             "[ -e .Build/bin/phpcs ] || composer update",
@@ -118,6 +126,18 @@
         "test:phpcompatibility:8.0": [
             "[ -e .Build/bin/phpcs ] || composer update",
             ".Build/bin/phpcs --ignore=.Build/*,/Resources/Public/JavaScript/*,./Resources/Private/PHP/Elastica/Composer/elasticsearch/elasticsearch/src/Elasticsearch/Endpoints/Indices/Split.php -p . --standard=.Build/vendor/phpcompatibility/php-compatibility/PHPCompatibility --runtime-set testVersion 8.0"
+        ],
+        "test:phpcompatibility:8.1": [
+            "[ -e .Build/bin/phpcs ] || composer update",
+            ".Build/bin/phpcs --ignore=.Build/*,/Resources/Public/JavaScript/*,./Resources/Private/PHP/Elastica/Composer/elasticsearch/elasticsearch/src/Elasticsearch/Endpoints/Indices/Split.php -p . --standard=.Build/vendor/phpcompatibility/php-compatibility/PHPCompatibility --runtime-set testVersion 8.1"
+        ],
+        "test:phpcompatibility:8.2": [
+            "[ -e .Build/bin/phpcs ] || composer update",
+            ".Build/bin/phpcs --ignore=.Build/*,/Resources/Public/JavaScript/*,./Resources/Private/PHP/Elastica/Composer/elasticsearch/elasticsearch/src/Elasticsearch/Endpoints/Indices/Split.php -p . --standard=.Build/vendor/phpcompatibility/php-compatibility/PHPCompatibility --runtime-set testVersion 8.2"
+        ],
+        "test:phpcompatibility:8.3": [
+            "[ -e .Build/bin/phpcs ] || composer update",
+            ".Build/bin/phpcs --ignore=.Build/*,/Resources/Public/JavaScript/*,./Resources/Private/PHP/Elastica/Composer/elasticsearch/elasticsearch/src/Elasticsearch/Endpoints/Indices/Split.php -p . --standard=.Build/vendor/phpcompatibility/php-compatibility/PHPCompatibility --runtime-set testVersion 8.3"
         ],
         "test:phpunit": [
             "[ -e .Build/bin/phpunit ] || composer update --ansi",

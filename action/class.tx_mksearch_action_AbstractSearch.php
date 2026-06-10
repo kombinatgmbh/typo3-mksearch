@@ -1,4 +1,5 @@
 <?php
+
 /***************************************************************
  * Copyright notice
  *
@@ -36,7 +37,7 @@ abstract class tx_mksearch_action_AbstractSearch extends \Sys25\RnBase\Frontend\
      *
      * @var tx_mksearch_service_internal_Index
      */
-    private $searchIndex = null;
+    private $searchIndex;
 
     /**
      * Returns the model for the current used index.

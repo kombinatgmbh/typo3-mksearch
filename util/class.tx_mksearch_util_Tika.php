@@ -1,4 +1,5 @@
 <?php
+
 /***************************************************************
 *  Copyright notice
 *
@@ -27,8 +28,8 @@
  */
 class tx_mksearch_util_Tika
 {
-    private static $instance = null;
-    private $tikaJar = null;
+    private static $instance;
+    private $tikaJar;
     private $tikaAvailable = -1;
     private $tikaLocaleType;
 
@@ -196,8 +197,12 @@ class tx_mksearch_util_Tika
 
         $ret = [];
         foreach ($shellOutput as $line) {
-            list($meta, $value) = explode(':', $line, 2);
-            $ret[$meta] = trim($value);
+            $splitLine = explode(':', $line, 2);
+            $meta = $splitLine[0] ?? '';
+            $value = $splitLine[1] ?? '';
+            if ($meta) {
+                $ret[$meta] = trim($value);
+            }
         }
 
         return $ret;

@@ -1,4 +1,5 @@
 <?php
+
 /***************************************************************
  *  Copyright notice
  *
@@ -54,8 +55,8 @@ class tx_mksearch_hooks_DatabaseConnection
      */
     public function doSelectPre(array &$parameters)
     {
-        if (tx_mksearch_service_internal_Index::isIndexingInProgress() &&
-            !isset($parameters['options']['enablefieldsoff'])
+        if (tx_mksearch_service_internal_Index::isIndexingInProgress()
+            && !isset($parameters['options']['enablefieldsoff'])
         ) {
             $parameters['options']['enablefieldsfe'] = 1;
 

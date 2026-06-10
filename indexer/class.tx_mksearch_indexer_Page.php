@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Hannes Bochmann
  *
@@ -86,6 +87,7 @@ class tx_mksearch_indexer_Page extends tx_mksearch_indexer_Base
                 return true;
             }
         }
+
         // else
         return parent::stopIndexing($tableName, $rawData, $indexDoc, $options);
     }

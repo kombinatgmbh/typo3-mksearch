@@ -1,4 +1,5 @@
 <?php
+
 /***************************************************************
 *  Copyright notice
 *
@@ -32,7 +33,7 @@ class tx_mksearch_service_engine_Solr extends \Sys25\RnBase\Typo3Wrapper\Service
      *
      * @var Apache_Solr_Service
      */
-    private $index = null;
+    private $index;
 
     /**
      * Name of the currently open index.
@@ -44,7 +45,7 @@ class tx_mksearch_service_engine_Solr extends \Sys25\RnBase\Typo3Wrapper\Service
     /**
      * @var tx_mksearch_model_internal_Index
      */
-    private $indexModel = null;
+    private $indexModel;
 
     /**
      * Constructor.

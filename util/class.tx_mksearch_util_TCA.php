@@ -1,4 +1,5 @@
 <?php
+
 /***************************************************************
 *  Copyright notice
 *
@@ -124,8 +125,8 @@ class tx_mksearch_util_TCA
         $contentType = is_array($params['row']['contenttype']) ?
             $params['row']['contenttype'][0] : $params['row']['contenttype'];
 
-        if (!(isset($params['params']['insertBetween']) && is_array($params['params']['insertBetween']) &&
-                    !empty($extKey) && !empty($contentType))) {
+        if (!(isset($params['params']['insertBetween']) && is_array($params['params']['insertBetween'])
+                    && !empty($extKey) && !empty($contentType))) {
             return;
         }
 
@@ -185,7 +186,7 @@ class tx_mksearch_util_TCA
             $rootOfIndex = tx_mksearch_util_Indexer::getInstance()->getSiteRootPage($index->getProperty('pid'));
             // Sind die RootPages identisch oder ist der Index global,
             // kann der Index verwendet werden.
-            if (empty($rootOfIndex['uid']) || $rootOfIndex['uid'] == $rootOfPlugin['uid']) {
+            if (empty($rootOfIndex['uid'] ?? null) || $rootOfIndex['uid'] == ($rootOfPlugin['uid'] ?? null)) {
                 $params['items'][] = [$index->getTitle(), $index->getUid()];
             }
         }

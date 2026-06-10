@@ -1,4 +1,5 @@
 <?php
+
 /***************************************************************
  * Copyright notice
  *
@@ -34,12 +35,12 @@ class tx_mksearch_util_FacetBuilder
     /**
      * @var \Sys25\RnBase\Domain\Model\DataModel
      */
-    private $options = null;
+    private $options;
 
     /**
      * @var tx_mksearch_util_KeyValueFacet|null
      */
-    private $keyValueFacetInstance = null;
+    private $keyValueFacetInstance;
 
     /**
      * Get singelton.
@@ -141,10 +142,10 @@ class tx_mksearch_util_FacetBuilder
                 $facetGroups[$groupName] = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
                     \Sys25\RnBase\Domain\Model\BaseModel::class,
                     [
-                                'uid' => ++$uid,
-                                'field' => $groupName,
-                                'items' => [],
-                        ]
+                        'uid' => ++$uid,
+                        'field' => $groupName,
+                        'items' => [],
+                    ]
                 );
             }
             $items = $facetGroups[$groupName]->getProperty('items');
@@ -313,6 +314,7 @@ class tx_mksearch_util_FacetBuilder
     {
         // field facets are an instance of \Sys25\RnBase\Domain\Model\BaseModel with childs in "items" of record
         // other facets, like pivot, are an instance of tx_mksearch_model_Facet with childs
+        $facet = null;
         foreach ($facets as $facet) {
             $childs = $facet instanceof tx_mksearch_model_Facet ? $facet->getChilds() : $facet->getItems();
             if (!empty($childs) && is_array($childs)) {

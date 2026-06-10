@@ -1,4 +1,5 @@
 <?php
+
 /***************************************************************
 *  Copyright notice
 *
@@ -129,9 +130,9 @@ class tx_mksearch_indexer_TtNewsNews extends tx_mksearch_indexer_Base
                 $indexDoc->setDeleted(true);
 
                 return $indexDoc;
-            } else {
-                return null;
             }
+
+            return null;
         }
 
         // Instantiate indexer document
@@ -277,6 +278,7 @@ class tx_mksearch_indexer_TtNewsNews extends tx_mksearch_indexer_Base
 
             return true;
         }
+
         // else
         return parent::stopIndexing($tableName, $rawData, $indexDoc, $options);
     }

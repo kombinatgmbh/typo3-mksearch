@@ -577,6 +577,9 @@ class tx_mksearch_filter_SolrBase extends tx_mksearch_filter_BaseFilter
      * Dieses Feld muss konfiguriert werden,
      * da darin die Umkreissuche stattfindet.
      *
+     * @see EXT:mksearch/static/static_extension_template/setup.txt (lib.mksearch.defaultsolrfilter.spatial)
+     * für alle Konfigurationsoptionen.
+     *
      * @param array &$fields
      * @param array &$options
      */
@@ -611,17 +614,20 @@ class tx_mksearch_filter_SolrBase extends tx_mksearch_filter_BaseFilter
         // @TODO: methode konfigurierbar machen ({!bbox}, {!geofilt}, ...)
         self::addFilterQuery($options, '{!geofilt}');
 
-        // damit die ergebnisse auch nach umkreis sortiert werden können,
-        // muss eine distanzberechnung mit in die query
-        // &q={!func}recip(geodist(), 2, 200, 20)
-        // dabei müssen wir aufpassen, ob wir uns im dismax befinden oder nicht.
-        // wir schreiben die funktion direkt mit in den term,
-        // ggf. als neuen parameter.
-        $func = '{!func}recip(geodist(), 2, 200, 20)';
-        if (empty($fields['term'])) {
-            $fields['term'] = $func;
-        } else {
-            $fields['term'] = [$fields['term'], $func];
+        if ($configurations->get($confId.'returnDistanceInResults')) {
+            if (empty($options['fl'])) {
+                $options['fl'] = '*,distance:geodist()';
+            } else {
+                $options['fl'] .= ',distance:geodist()';
+            }
+        }
+
+        if ($configurations->get($confId.'sortByLowestDistance')) {
+            $options['sort'] = 'geodist() asc';
+        }
+
+        if ($configurations->get($confId.'sortByHighestDistance')) {
+            $options['sort'] = 'geodist() desc';
         }
     }
 
@@ -867,7 +873,7 @@ class tx_mksearch_filter_SolrBase extends tx_mksearch_filter_BaseFilter
                 $options['group.ngroups'] = 'true';
                 $options['group.truncate'] = 'true';
             }
-        } elseif (is_array($options['group'])) {
+        } elseif (is_array($options['group'] ?? null)) {
             // remove group config from options array so useless parameters
             // are not taken into the request. this can happen if grouping not enabled
             // but options.group.useNumberOfGroupsAsSearchResultCount is set.

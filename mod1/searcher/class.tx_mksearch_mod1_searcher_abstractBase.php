@@ -18,13 +18,13 @@ abstract class tx_mksearch_mod1_searcher_abstractBase
      *
      * @var \Sys25\RnBase\Backend\Module\IModule
      */
-    private $mod = null;
+    private $mod;
     /**
      * Selector Klasse.
      *
      * @var tx_mksearch_mod1_util_Selector
      */
-    private $selector = null;
+    private $selector;
     /**
      * Otions.
      *
@@ -202,10 +202,10 @@ abstract class tx_mksearch_mod1_searcher_abstractBase
         }
 
         return [
-                'table' => $content,
-                'totalsize' => $cnt,
-                'pager' => '<div class="pager">'.$sPagerData.'</div>',
-            ];
+            'table' => $content,
+            'totalsize' => $cnt,
+            'pager' => '<div class="pager">'.$sPagerData.'</div>',
+        ];
     }
 
     /**

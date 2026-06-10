@@ -1,4 +1,5 @@
 <?php
+
 /***************************************************************
 *  Copyright notice
 *
@@ -172,8 +173,8 @@ class tx_mksearch_util_Indexer
      */
     public function doValueConversion($value, $indexDocKey, $rawData, $sRecordKey, $options)
     {
-        if (!(array_key_exists('fieldsConversion.', $options) &&
-            array_key_exists($indexDocKey.'.', $options['fieldsConversion.']))) {
+        if (!(array_key_exists('fieldsConversion.', $options)
+            && array_key_exists($indexDocKey.'.', $options['fieldsConversion.']))) {
             return $value;
         }
 
@@ -400,9 +401,9 @@ class tx_mksearch_util_Indexer
 
         if (empty($includePageTrees)) {
             return $this->includePageTreesNotSet($pid, $options);
-        } else {
-            return $this->includePageTreesSet($pid, $options);
         }
+
+        return $this->includePageTreesSet($pid, $options);
     }
 
     /**
@@ -417,9 +418,9 @@ class tx_mksearch_util_Indexer
 
         if (false !== $this->getFirstRootlineIndexInPageTrees($pid, $excludePageTrees)) {
             return false;
-        } else {
-            return $this->pageIsNotInExcludePageTrees($pid, $options);
         }
+
+        return $this->pageIsNotInExcludePageTrees($pid, $options);
     }
 
     /**
@@ -434,9 +435,9 @@ class tx_mksearch_util_Indexer
             $includePages = $this->getConfigValue('pages', $options['include.'] ?? []);
 
             return empty($includePages);
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -466,9 +467,9 @@ class tx_mksearch_util_Indexer
 
         if (false === $firstRootlineIndexInIncludePageTrees) {
             return false;
-        } else {
-            return $this->pageIsInIncludePageTrees($pid, $options, $firstRootlineIndexInIncludePageTrees);
         }
+
+        return $this->pageIsInIncludePageTrees($pid, $options, $firstRootlineIndexInIncludePageTrees);
     }
 
     /**
@@ -490,9 +491,9 @@ class tx_mksearch_util_Indexer
         )
         ) {
             return false;
-        } else {
-            return $this->pageIsNotInExcludePages($pid, $options);
         }
+
+        return $this->pageIsNotInExcludePages($pid, $options);
     }
 
     /**
@@ -627,7 +628,7 @@ class tx_mksearch_util_Indexer
      *
      * @return array
      */
-    public function getPageContent($pid)
+    public function getPageContent($pid, array $options = [])
     {
         $pid = (int) $pid;
         if (!$pid) {
@@ -640,9 +641,10 @@ class tx_mksearch_util_Indexer
             'limit' => 1,
         ];
         $from = ['pages', 'pages'];
-        $page = \Sys25\RnBase\Database\Connection::getInstance()->doSelect('*', $from, $sqlOptions);
+        $page = \Sys25\RnBase\Database\Connection::getInstance()->doSelect('*', $from, $sqlOptions)[0] ?? [];
 
-        return !empty($page[0]) ? $page[0] : [];
+        return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Domain\Repository\PageRepository::class)
+            ->getPageOverlay($page, $options['lang'] ?? 0);
     }
 
     /**
@@ -678,8 +680,8 @@ class tx_mksearch_util_Indexer
 
             // stop if not set to "All languages" and lang doesn't match
             if (
-                $sourceRecord[$sysLanguageUidField] >= 0 &&
-                !in_array($sourceRecord[$sysLanguageUidField], $languages)
+                $sourceRecord[$sysLanguageUidField] >= 0
+                && !in_array($sourceRecord[$sysLanguageUidField], $languages)
             ) {
                 return true;
             }

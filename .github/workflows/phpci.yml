@@ -22,11 +22,14 @@ jobs:
                 php-version:
                     - "7.4"
                     - "8.0"
+                    - "8.1"
+                    - "8.2"
+                    - "8.3"
 
         steps:
             -
                 name: "Checkout"
-                uses: "actions/checkout@v2"
+                uses: "actions/checkout@v4"
             -
                 name: "Setup PHP"
                 uses: "shivammathur/setup-php@v2"
@@ -42,7 +45,7 @@ jobs:
                 run: "echo \"::set-output name=directory::$(composer config cache-dir)\""
             -
                 name: "Cache dependencies installed with composer"
-                uses: "actions/cache@v2.0.0"
+                uses: "actions/cache@v4"
                 with:
                     path: "${{ steps.determine-composer-cache-directory.outputs.directory }}"
                     key: "php-${{ matrix.php-version }}-composer-${{ hashFiles('composer.lock') }}"
@@ -69,11 +72,14 @@ jobs:
                 php-version:
                     - "7.4"
                     - "8.0"
+                    - "8.1"
+                    - "8.2"
+                    - "8.3"
 
         steps:
             -
                 name: "Checkout"
-                uses: "actions/checkout@v2"
+                uses: "actions/checkout@v4"
             -
                 name: "Setup PHP"
                 uses: "shivammathur/setup-php@v2"
@@ -89,7 +95,7 @@ jobs:
                 run: "echo \"::set-output name=directory::$(composer config cache-dir)\""
             -
                 name: "Cache dependencies installed with composer"
-                uses: "actions/cache@v2.0.0"
+                uses: "actions/cache@v4"
                 with:
                     path: "${{ steps.determine-composer-cache-directory.outputs.directory }}"
                     key: "php-${{ matrix.php-version }}-composer-${{ hashFiles('composer.lock') }}"
@@ -119,11 +125,17 @@ jobs:
                         php-version: "7.4"
                     -   typo3-version: "^11.5"
                         php-version: "8.0"
+                    -   typo3-version: "^11.5"
+                        php-version: "8.1"
+                    -   typo3-version: "^11.5"
+                        php-version: "8.2"
+                    -   typo3-version: "^11.5"
+                        php-version: "8.3"
 
         steps:
             -
                 name: "Checkout"
-                uses: "actions/checkout@v2"
+                uses: "actions/checkout@v4"
             -
                 name: "Setup PHP"
                 uses: "shivammathur/setup-php@v2"
@@ -139,7 +151,7 @@ jobs:
                 run: "echo \"::set-output name=directory::$(composer config cache-dir)\""
             -
                 name: "Cache dependencies installed with composer"
-                uses: "actions/cache@v2.0.0"
+                uses: "actions/cache@v4"
                 with:
                     path: "${{ steps.determine-composer-cache-directory.outputs.directory }}"
                     key: "php-${{ matrix.php-version }}-composer-${{ hashFiles('composer.lock') }}"

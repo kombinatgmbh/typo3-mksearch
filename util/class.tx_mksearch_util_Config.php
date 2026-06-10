@@ -1,4 +1,5 @@
 <?php
+
 /***************************************************************
 *  Copyright notice
 *
@@ -89,6 +90,7 @@ class tx_mksearch_util_Config
         if ($l) {
             return $l;
         }
+
         // else
         return \Sys25\RnBase\Configuration\Processor::getExtensionCfgValue('mksearch', $name.'_fallback');
     }
@@ -129,6 +131,7 @@ class tx_mksearch_util_Config
         if (!$extKey) {
             return self::$indexerTableMappings;
         }
+
         // Indexers with given $extKey
         return isset(self::$indexerTableMappings[$extKey]) ?
                 array_keys(self::$indexerTableMappings[$extKey]) : [];

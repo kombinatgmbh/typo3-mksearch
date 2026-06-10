@@ -12,7 +12,7 @@ class tx_mksearch_util_SolrResponseProcessor
      *
      * @var \Sys25\RnBase\Configuration\Processor
      */
-    private $configurations = null;
+    private $configurations;
     private $confId = 'responseProcessor.';
 
     /**
@@ -191,7 +191,7 @@ class tx_mksearch_util_SolrResponseProcessor
                 $cleanHighlighted
             )
             ) {
-                $highlightedValue = $highlightedValue.$wrap[1];
+                $highlightedValue .= $wrap[1];
             }
         }
 

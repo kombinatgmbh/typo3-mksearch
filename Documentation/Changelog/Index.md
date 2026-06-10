@@ -1,6 +1,43 @@
 Changelog
 =========
 
+11.0.17
+-----
+
+- Fix conflict with newest TYPO3 versions
+
+11.0.16
+-----
+
+- Fix warnings
+
+11.0.15
+-----
+
+- Fix warnings
+
+11.0.14
+-----
+
+- Optimize spatial search
+
+11.0.13
+-----
+
+- Fix compatibility with TYPO3 10.4
+ 
+11.0.8 - 11.0.12
+----------------
+- several bugfixes
+- new icon
+- more info about spatial search
+
+11.0.7
+-----
+
+- Bugfix ignore being_indexed when adding records to queue 
+
+
 11.0.6
 -----
 

@@ -1,4 +1,5 @@
 <?php
+
 /***************************************************************
 *  Copyright notice
 *
@@ -97,6 +98,7 @@ class tx_mksearch_util_ServiceRegistry
         if (!$srv instanceof tx_mksearch_interface_Indexer) {
             throw new Exception('Service "'.$srv->info['className'].'" does not implement tx_mksearch_interface_Indexer!');
         }
+
         // else
         return $srv;
     }

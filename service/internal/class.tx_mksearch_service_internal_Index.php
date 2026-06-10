@@ -1,4 +1,5 @@
 <?php
+
 /***************************************************************
 *  Copyright notice
 *
@@ -80,11 +81,11 @@ class tx_mksearch_service_internal_Index extends tx_mksearch_service_internal_Ba
         }
         // dummy record bauen!
         $record = [
-                'recid' => $uid,
-                'tablename' => $tableName,
-                'resolver' => $resolver,
-                'data' => is_array($data) ? serialize($data) : $data,
-            ];
+            'recid' => $uid,
+            'tablename' => $tableName,
+            'resolver' => $resolver,
+            'data' => is_array($data) ? serialize($data) : $data,
+        ];
         // Indizierung starten
         $this->executeQueueData([$record]);
     }
@@ -110,7 +111,7 @@ class tx_mksearch_service_internal_Index extends tx_mksearch_service_internal_Ba
         }
         if ($checkExisting) {
             $options = [];
-            $options['where'] = 'recid=\''.$uid.'\' AND tablename=\''.$tableName.'\' AND deleted=0';
+            $options['where'] = 'recid=\''.$uid.'\' AND tablename=\''.$tableName.'\' AND deleted=0 AND being_indexed=0';
             $options['enablefieldsoff'] = 1;
             $ret = $this->getDatabaseConnection()->doSelect('uid', self::$queueTable, $options);
             if (count($ret)) {
